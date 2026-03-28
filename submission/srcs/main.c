@@ -1,24 +1,20 @@
-#include "minishell.h"
 #include "libft.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <readline/readline.h>
+#include "minishell.h"
 #include <readline/history.h>
+#include <readline/readline.h>
 
 // ft_split で確保した二次元配列を解放する関数
-void    free_array(char **arr)
+void	free_array(char **arr)
 {
-    int i;
+	int	i;
 
-    i = 0;
-    while (arr[i])
-    {
-        free(arr[i]);
-        i++;
-    }
-    free(arr);
+	i = 0;
+	while (arr[i])
+	{
+		free(arr[i]);
+		i++;
+	}
+	free(arr);
 }
 
 // [一時的] トークンリストを char **argv に変換する関数
@@ -38,12 +34,10 @@ char	**token_list_to_argv(t_token *tokens)
 		count++;
 		tmp = tmp->next;
 	}
-
 	// 2. 配列確保
 	argv = malloc(sizeof(char *) * (count + 1));
 	if (!argv)
 		return (NULL);
-
 	// 3. 文字列をコピー (strdup必須)
 	i = 0;
 	tmp = tokens;
@@ -62,42 +56,38 @@ char	**token_list_to_argv(t_token *tokens)
 ** readlineはmallocされた文字列を返すので、使い終わったらfreeが必要です。
 ** lineがNULLの場合は、Ctrl-D (EOF) が入力されたことを意味します。
 */
-void minishell_loop(char **environ){
-    char *line;
-    t_token	*token_list;
-    char **args;
+void	minishell_loop(char **environ)
+{
+	char	*line;
+	t_token	*token_list;
 
-    while (1)
-    {
-        g_signal = 0; // シグナルステータスをリセット
-        line = readline(GREEN"minishell> "RESET);
-        if(line == NULL)
-            break;
-
-        // シグナルが発生した場合は継続
-        if (g_signal == SIGINT)
-        {
-            free(line);
-            continue;
-        }
-
-        // 1. 読み込み
-        if (*line){
-            add_history(line);
-        }
-
-        // 2. 字句解析 (Lexer)
+	char **args; //分割されたコマンド
+	while (1)
+	{
+		g_signal = 0; // シグナルステータスをリセット
+		line = readline(GREEN "minishell> " RESET);
+		if (line == NULL)
+			break ;
+		// シグナルが発生した場合は継続
+		if (g_signal == SIGINT)
+		{
+			free(line);
+			continue ;
+		}
+		// 1. 読み込み
+		if (*line)
+		{
+			add_history(line);
+		}
+		// 2. 字句解析 (Lexer)
 		token_list = tokenize(line);
-		
 		// [Debug] トークンの中身を見てみる (開発中はこれをコメントアウトして確認)
 		// t_token *curr = token_list;
 		// while (curr) {
 		// 	printf("Token: kind=%d, word=[%s]\n", curr->kind, curr->word);
 		// 	curr = curr->next;
 		// }
-		
-
-        // 3. 実行 (Executor)
+		// 3. 実行 (Executor)
 		// ※ パイプなどはまだ動かない。単純コマンドのみ。
 		if (token_list && token_list->kind != TK_EOF)
 		{
@@ -105,20 +95,25 @@ void minishell_loop(char **environ){
 			execute_command(args, environ); // コマンド実行関数（未実装）
 			free_array(args);
 		}
-
-        // 4. 後始末
+		// 4. 後始末
 		token_free(&token_list); // リスト全体を解放
-
-        free(line);//readlienで確保したメモリを解放
-    }
+		free(line);              // readlienで確保したメモリを解放
+	}
 }
 
-
-int main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
-    (void)argc;
-    (void)argv;
-    setup_signals();
-    minishell_loop(envp);
-    return (0);
+	t_token	token;
+
+	(void)argc;
+	(void)argv;
+	//環境変数のコピー
+	init_env(&token, envp);
+	//シグナル初期化
+	setup_signals();
+	//メインループの開始
+	minishell_loop(envp);
+	// 終了前の全体メモリ解放
+	// free_all_data(&data);
+	return (0);
 }
