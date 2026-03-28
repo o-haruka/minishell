@@ -39,6 +39,37 @@ typedef struct s_token
 	struct s_token *next; // 次のトークンへのポインタ
 }			t_token;
 
+// リダイレクト情報（単方向リスト）
+typedef struct s_redir {
+    t_token_kind    kind;   // TK_REDIRECT_IN / TK_REDIRECT_OUT / TK_APPEND / TK_HEREDOC
+    char            *file;  // ファイル名 or heredoc の区切り文字
+    struct s_redir  *next;
+} t_redir;
+
+// 環境変数（単方向リスト）
+typedef struct s_env {
+    char            *key;   // "PATH" "HOME" など
+    char            *value; // "/usr/bin:/bin" など
+    struct s_env    *next;
+} t_env;
+
+// Parser が作るコマンド（単方向リスト）
+typedef struct s_cmd {
+    char            **args;  // {"ls", "-la", NULL} など
+    t_redir         *redirs; // このコマンドのリダイレクト一覧
+    struct s_cmd    *next;   // 次のコマンド（パイプの右側）
+} t_cmd;
+
+
+// 全体を束ねる管理構造体
+typedef struct s_shell {
+    t_env           *env;         // 環境変数リスト
+    t_cmd           *cmds;        // パース済みコマンドリスト
+    t_token         *tokens;      // Lexer が作ったトークンリスト
+    int             last_status;  // $? の値
+} t_shell;
+
+
 /* --- Prototypes --- */
 
 void		minishell_loop(char **environ);
