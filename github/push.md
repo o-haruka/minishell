@@ -11,7 +11,7 @@ git commit -m "変更内容の説明"
 
 ### ④リモートにプッシュ
 git push origin homura   # (またはhkuninag)
-```
+
 
 ---
 
@@ -23,6 +23,7 @@ git push origin homura   # (またはhkuninag)
 ---
 
 ## 全体の流れまとめ
+
 ```
 自分のブランチで作業
     ↓ git add / commit / push
@@ -32,8 +33,7 @@ git push origin homura   # (またはhkuninag)
 リモートのmainに反映
     ↓ git pull → git merge（前の手順）
 自分のブランチに最新のmainを取り込む
-
-
+```
 
 # git pushだけでpushする
 

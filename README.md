@@ -14,6 +14,66 @@
 
 ・作った側でなく、使い終わった側がfreeする
 
+
+### エラーメッセージ
+・ 具体的なエラーメッセージは検討中。文言は保留 (3/29 MTG)
+・ 誰がエラーを出力するかのルール： 「自分の担当フェーズで発見したエラーは自分が出力する」
+・ エラー後の処理方法： 保留。 Claude 案： 「エラーを発見した関数は NULL または 1 を返す。main ループ側がそれを受け取って last_status = 2 をセットし、Executorには渡さずに次のループへ continue する」
+
+
+### ディレクトリー構成案 (claude 2026/3/29)
+```
+minishell/
+├── Makefile
+├── README.md
+├── includes/
+│   └── minishell.h          ← 構造体・プロトタイプ・define を全部ここに
+├── libft/
+│   ├── Makefile
+│   ├── includes/
+│   │   └── libft.h
+│   └── srcs/
+│       └── *.c
+└── srcs/
+    ├── main.c
+    ├── lexer/
+    │   ├── lexer.c          ← トークン分割メインループ
+    │   ├── lexer_utils.c    ← 補助関数
+    │   ├── quote.c          ← クォート処理
+    │   └── token.c          ← トークンの生成・管理
+    ├── parser/
+    │   ├── parser.c         ← トークン列 → コマンドリスト変換
+    │   ├── parser_utils.c
+    │   └── expand.c         ← $VAR / $? の展開
+    ├── executor/
+    │   ├── executor.c       ← 実行エンジン本体（fork/execve）
+    │   ├── executor_utils.c
+    │   ├── pipe.c           ← パイプライン処理
+    │   ├── redirect.c       ← リダイレクト処理（dup2）
+    │   └── path.c           ← PATH 検索
+    ├── builtins/
+    │   ├── builtin_echo.c   ← echo (-n)
+    │   ├── builtin_cd.c     ← cd
+    │   ├── builtin_pwd.c    ← pwd
+    │   ├── builtin_env.c    ← env
+    │   ├── builtin_export.c ← export
+    │   ├── builtin_unset.c  ← unset
+    │   └── builtin_exit.c   ← exit
+    ├── env/
+    │   ├── env_init.c       ← 環境変数リストの初期化
+    │   └── env_utils.c      ← 環境変数の検索・更新
+    ├── signal/
+    │   └── signal.c         ← ctrl-C / ctrl-D / ctrl-\ 処理
+    └── utils/
+        ├── error.c          ← エラー出力・終了処理
+        ├── free.c           ← メモリ解放まとめ
+        └── utils.c          ← 汎用補助関数
+```
+
+
+
+
+
 ## 📋 使用可能外部関数一覧（カテゴリ別）
 
 ### 📖 入力・履歴管理
