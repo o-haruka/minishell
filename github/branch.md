@@ -1,15 +1,22 @@
 # mainの内容を自分のブランチに取り組む方法
 
-### ①まず自分のブランチに移動
-git checkout 自分のブランチ名
+### ①mainブランチに移動
+git checkout main
 
-### ②リモートの最新情報を取得
-git fetch origin
+### ②リモートのmainを取得
+git pull origin main
 
-### ③mainの内容を自分のブランチに取り込む
-git merge origin/main
+### ③homuraブランチに移動
+git checkout homura
+
+### ④mainの内容をhomuraに取り込む
+git merge main
+
+### ⑤リモートのhomuraに反映
+git push origin homura
 
 
+--------------------------------------
 
 # 自分のブランチの確認方法
 

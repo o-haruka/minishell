@@ -1,4 +1,41 @@
-## git pushだけでpushする
+# 作業内容をpush する手順
+
+### ①自分のブランチにいることを確認
+git branch
+
+### ②変更ファイルをステージング
+git add .
+
+### ③コミット
+git commit -m "変更内容の説明"
+
+### ④リモートにプッシュ
+git push origin homura   # (またはhkuninag)
+```
+
+---
+
+その後、**mainに反映したい場合**はGitHub上で：
+
+1. `base: main` ← `compare: homura` でPRを作成
+2. チームメイトが確認して「Merge pull request」を押す
+
+---
+
+## 全体の流れまとめ
+```
+自分のブランチで作業
+    ↓ git add / commit / push
+リモートの自分のブランチに反映
+    ↓ GitHubでPR作成
+    ↓ チームメイトが承認・マージ
+リモートのmainに反映
+    ↓ git pull → git merge（前の手順）
+自分のブランチに最新のmainを取り込む
+
+
+
+# git pushだけでpushする
 
 git pushコマンドでpushしても反映されない問題があった。
 
