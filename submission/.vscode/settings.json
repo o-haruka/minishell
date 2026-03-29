@@ -8,6 +8,6 @@
   "editor.renderWhitespace": "all",
   "editor.rulers": [80],
   "[c]": {
-    "editor.defaultFormatter": "ms-vscode.cpptools"
+    // "editor.defaultFormatter": "ms-vscode.cpptools"
   }
 }
