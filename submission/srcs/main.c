@@ -56,18 +56,21 @@ char	**token_list_to_argv(t_token *tokens)
 ** readlineはmallocされた文字列を返すので、使い終わったらfreeが必要です。
 ** lineがNULLの場合は、Ctrl-D (EOF) が入力されたことを意味します。
 */
-void	minishell_loop(char **environ)
-{
-	char	*line;
-	t_token	*token_list;
 
-	char **args; //分割されたコマンド
+// void	minishell_loop(char **environ)　×
+void    minishell_loop(t_shell *shell) //○
+{
+	char *line;
+	// char **args; //分割されたコマンド //!shell->cmdsがあるので多分不要
+
 	while (1)
 	{
 		g_signal = 0; // シグナルステータスをリセット
-		line = readline(GREEN "minishell> " RESET);
-		if (line == NULL)
+		line = readline(GREEN "minishell> " RESET); //TODO free必須(readlineはmallocする)
+		if (line == NULL){
+			//TODO 本家ではここに(break前に)printf("exit\n");が入るらしい
 			break ;
+		}
 		// シグナルが発生した場合は継続
 		if (g_signal == SIGINT)
 		{
@@ -76,44 +79,65 @@ void	minishell_loop(char **environ)
 		}
 		// 1. 読み込み
 		if (*line)
-		{
 			add_history(line);
-		}
+
 		// 2. 字句解析 (Lexer)
-		token_list = tokenize(line);
+		shell->tokens = tokenize(line);
 		// [Debug] トークンの中身を見てみる (開発中はこれをコメントアウトして確認)
-		// t_token *curr = token_list;
+		// t_token *curr = shell->tokens;
 		// while (curr) {
 		// 	printf("Token: kind=%d, word=[%s]\n", curr->kind, curr->word);
 		// 	curr = curr->next;
 		// }
-		// 3. 実行 (Executor)
-		// ※ パイプなどはまだ動かない。単純コマンドのみ。
-		if (token_list && token_list->kind != TK_EOF)
-		{
-			args = token_list_to_argv(token_list);
-			execute_command(args, environ); // コマンド実行関数（未実装）
-			free_array(args);
-		}
+
+		//TODO  3. Parser : トークンを解析して shell->cmds に変換（今後実装）
+		// shell->cmds = parse(shell->tokens);
+
+		//TODO 3. 実行 (Executor) コマンドを実行し、終了ステータスを更新（今後実装）
+		// shell->last_status = execute(shell);
+
+		// ※ テスト用：パーサー実装までの繋ぎ
+        /*
+        if (shell->tokens && shell->tokens->kind != TK_EOF)
+        {
+            char **args = token_list_to_argv(shell->tokens);
+            // ※ environ が無いので、一時的に NULL を渡すか、main から envp を引っ張ってくる
+            execute_command(args, NULL); 
+            free_array(args);
+        }
+        */
+
 		// 4. 後始末
-		token_free(&token_list); // リスト全体を解放
+		token_free(&(shell->tokens)); // リスト全体を解放
 		free(line);              // readlienで確保したメモリを解放
 	}
 }
 
 int	main(int argc, char **argv, char **envp)
 {
-	t_token	token;
-
+	t_shell shell; //!全体の状態を持つ構造体
+	
+	// t_env *env_list; //! 逆に環境変数用の変数が必要。 環境変数の連結リストの先頭ポインタ
 	(void)argc;
 	(void)argv;
-	//環境変数のコピー
-	init_env(&token, envp);
-	//シグナル初期化
-	setup_signals();
-	//メインループの開始
-	minishell_loop(envp);
-	// 終了前の全体メモリ解放
-	// free_all_data(&data);
+
+	//! 1. 初期化 (構造体の中身を0クリア) libft使うようにする
+    memset(&shell, 0, sizeof(t_shell));
+	
+	//! 環境変数の取得。envpを解析して、扱いやすい連結リスト(t_env)に変換する
+	// TODO: (展開 (Expander)」の実装に取り掛かる直前)に実装
+	(void)envp;//後で削除
+	// shell.env = init_env(envp);
+
+	shell.last_status = 0;         // 初期ステータスは0
+
+	//2. シグナル初期化
+	// setup_signals();
+
+	//3. メインループの開始
+	minishell_loop(&shell);
+
+	//4. 終了前の全体メモリ解放
+	// free_all_data(env_list);
 	return (0);
 }

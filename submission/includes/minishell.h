@@ -72,7 +72,7 @@ typedef struct s_shell {
 
 /* --- Prototypes --- */
 
-void		minishell_loop(char **environ);
+void		minishell_loop(t_shell *shell);
 void		setup_signals(void);
 
 // tokenizer.c

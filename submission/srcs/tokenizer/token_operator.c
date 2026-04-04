@@ -5,14 +5,14 @@
 void append_operator(t_token **head, char **line)
 {
     t_token_kind kind;
-    char *op_str;
-    op_str = NULL;
+    char *operator_str;//!わかりにくいのでoperator_strがいいかも
+    operator_str = NULL;
 
     // 1. 種類と文字列の決定
     if (**line == '|')
     {
         kind = TK_PIPE;
-        op_str = ft_strdup("|");
+        operator_str = ft_strdup("|");
         (*line)++; // 1文字進める
     }
     else if (**line == '>')
@@ -21,13 +21,13 @@ void append_operator(t_token **head, char **line)
         if ((*line)[1] == '>')//「現在の場所から見て何番目か？」を表している
         {
             kind = TK_APPEND;
-            op_str = ft_strdup(">>");
+            operator_str = ft_strdup(">>");
             (*line) += 2; // 2文字進める
         }
         else
         {
             kind = TK_REDIRECT_OUT;
-            op_str = ft_strdup(">");
+            operator_str = ft_strdup(">");
             (*line)++; // 1文字進める
         }
     }
@@ -37,13 +37,13 @@ void append_operator(t_token **head, char **line)
         if ((*line)[1] == '<')
         {
             kind = TK_HEREDOC;
-            op_str = ft_strdup("<<");
+            operator_str = ft_strdup("<<");
             (*line) += 2; // 2文字進める
         }
         else
         {
             kind = TK_REDIRECT_IN;
-            op_str = ft_strdup("<");
+            operator_str = ft_strdup("<");
             (*line)++; // 1文字進める
         }
     }
@@ -54,7 +54,7 @@ void append_operator(t_token **head, char **line)
     }
 
     // 2. 新しいノードを作ってリストに繋ぐ
-    t_token *new_token = token_new(op_str, kind);
+    t_token *new_token = token_new(operator_str, kind);
     token_add_back(head, new_token);
 }
 
@@ -68,6 +68,7 @@ void append_word(t_token **head, char **line)
     start = *line; // 1. 開始位置をメモ
     quote = 0;     // 0は「クォートに入っていない」状態
 
+    //TODO: 閉じクォートがないときの処理がないのでは？？
     while (**line)
     {
         // A. クォート中の処理
@@ -94,6 +95,7 @@ void append_word(t_token **head, char **line)
     // ※ ft_substr(文字列, 開始インデックス, 長さ)
     //文字列の一部を切り出して新しい文字列を作成する関数（substring = 部分文字列）。
     // ここではポインタの引き算で長さを出しています
+    //!ft_substrはmalloc使用。どこでfreeする？ token_freeでfree済み
     word_str = ft_substr(start, 0, *line - start);
 
     // 3. リストに追加

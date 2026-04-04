@@ -8,6 +8,7 @@ t_token *tokenize(char *line)
 	while (*line)
 	{
 		// 1. スペース読み飛ばし
+		// TODO is_spaceはlibftのft_isspaceの方がいいか？
 		if (is_space(*line))
 			consume_space(&line);
 
