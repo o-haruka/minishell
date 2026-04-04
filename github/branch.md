@@ -4,16 +4,17 @@
 git checkout main
 
 ### ②リモートのmainを取得
-git pull origin main
+git pull
+(このコマンドで機能するように、事前に git branch --set-upstream-to=origin/main main コマンドで設定しておく)
 
 ### ③homuraブランチに移動
-git checkout homura
+git checkout homura(/hkuninag)
 
 ### ④mainの内容をhomuraに取り込む
 git merge main
 
 ### ⑤リモートのhomuraに反映
-git push origin homura
+git push origin homura(/hkuninag)
 
 
 --------------------------------------
