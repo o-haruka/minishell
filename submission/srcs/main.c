@@ -91,7 +91,10 @@ void    minishell_loop(t_shell *shell) //○
 		// }
 
 		//TODO  3. Parser : トークンを解析して shell->cmds に変換（今後実装）
-		// shell->cmds = parse(shell->tokens);
+		shell->cmds = parse(shell->tokens);
+		// [Debug] パース結果（t_cmdリスト）を見たいときだけ有効化
+		debug_print_cmds(shell->cmds);
+        
 
 		//TODO 3. 実行 (Executor) コマンドを実行し、終了ステータスを更新（今後実装）
 		// shell->last_status = execute(shell);
