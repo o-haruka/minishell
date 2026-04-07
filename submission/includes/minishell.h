@@ -102,6 +102,10 @@ parser
 */
 t_cmd		*parse(t_token *tokens);
 
+// debug.c
+void debug_print_tokens(t_token *tokens);
+void debug_print_cmds(t_cmd *cmd);
+
 void		execute_command(char **cmdline, char **envp);
 
 void		free_array(char **array);
