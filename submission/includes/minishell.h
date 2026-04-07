@@ -12,6 +12,7 @@
 # define CROSS "\033[31m[✘]\033[0m"
 # define GREEN "\033[0;32m"
 # define RED "\033[0;31m"
+# define PINK "\033[0;35m"
 # define RESET "\033[0m"
 
 // グローバル変数宣言
@@ -72,9 +73,13 @@ typedef struct s_shell {
 
 /* --- Prototypes --- */
 
+// main.c
 void		minishell_loop(t_shell *shell);
 void		setup_signals(void);
 
+/*
+    tokenizer
+*/
 // tokenizer.c
 t_token		*tokenize(char *line);
 
