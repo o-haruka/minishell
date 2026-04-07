@@ -121,15 +121,15 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 
-	//! 1. 初期化 (構造体の中身を0クリア) libft使うようにする
-    memset(&shell, 0, sizeof(t_shell));
+	// 1. 初期化 (構造体の中身を0クリア) libftのmemsetでもOK
+	// shell = (t_shell){0};
+	shell = (t_shell){NULL, NULL, NULL, 0}; //わかりやすい
+	// shell = (t_shell){.env = NULL, .tokens = NULL, .cmds = NULL, .last_status = 0}; //可読性は上がるが長い
 	
 	//! 環境変数の取得。envpを解析して、扱いやすい連結リスト(t_env)に変換する
 	// TODO: (展開 (Expander)」の実装に取り掛かる直前)に実装
 	(void)envp;//後で削除
 	// shell.env = init_env(envp);
-
-	shell.last_status = 0;         // 初期ステータスは0
 
 	//2. シグナル初期化
 	// setup_signals();
