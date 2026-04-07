@@ -3,65 +3,14 @@
 #include <readline/history.h>
 #include <readline/readline.h>
 
-// ft_split で確保した二次元配列を解放する関数
-void	free_array(char **arr)
-{
-	int	i;
-
-	i = 0;
-	while (arr[i])
-	{
-		free(arr[i]);
-		i++;
-	}
-	free(arr);
-}
-
-// [一時的] トークンリストを char **argv に変換する関数
-// Parserを作るまでの繋ぎとして、exec_simple_cmd を再利用するために使う
-char	**token_list_to_argv(t_token *tokens)
-{
-	int		count;
-	t_token	*tmp;
-	char	**argv;
-	int		i;
-
-	// 1. 要素数を数える
-	count = 0;
-	tmp = tokens;
-	while (tmp && tmp->kind != TK_EOF) // EOFトークンは含めない
-	{
-		count++;
-		tmp = tmp->next;
-	}
-	// 2. 配列確保
-	argv = malloc(sizeof(char *) * (count + 1));
-	if (!argv)
-		return (NULL);
-	// 3. 文字列をコピー (strdup必須)
-	i = 0;
-	tmp = tokens;
-	while (tmp && tmp->kind != TK_EOF)
-	{
-		argv[i] = ft_strdup(tmp->word); // ここでコピーしないと後でdouble freeになる
-		tmp = tmp->next;
-		i++;
-	}
-	argv[i] = NULL;
-	return (argv);
-}
-
 /*
 ** ループ処理を行う関数
 ** readlineはmallocされた文字列を返すので、使い終わったらfreeが必要です。
 ** lineがNULLの場合は、Ctrl-D (EOF) が入力されたことを意味します。
 */
-
-// void	minishell_loop(char **environ)　×
-void    minishell_loop(t_shell *shell) //○
+void    minishell_loop(t_shell *shell)
 {
 	char *line;
-	// char **args; //分割されたコマンド //!shell->cmdsがあるので多分不要
 
 	while (1)
 	{
@@ -95,17 +44,6 @@ void    minishell_loop(t_shell *shell) //○
 
 		//TODO 3. 実行 (Executor) コマンドを実行し、終了ステータスを更新（今後実装）
 		// shell->last_status = execute(shell);
-
-		// ※ テスト用：パーサー実装までの繋ぎ
-        /*
-        if (shell->tokens && shell->tokens->kind != TK_EOF)
-        {
-            char **args = token_list_to_argv(shell->tokens);
-            // ※ environ が無いので、一時的に NULL を渡すか、main から envp を引っ張ってくる
-            execute_command(args, NULL); 
-            free_array(args);
-        }
-        */
 
 		// 4. 後始末
 		token_free(&(shell->tokens)); // リスト全体を解放

@@ -1,6 +1,7 @@
 #include "libft.h"
 #include "minishell.h"
 #include <unistd.h>
+#include <stdlib.h>
 
 /*
 get_env_path() → PATH環境変数を取得
@@ -9,6 +10,19 @@ search_path() → 各ディレクトリでコマンドを探索
 access() → 実行権限を確認
 minishellにおいて、ユーザーが入力したコマンド（例：ls、grepなど）の実行可能ファイルを見つけるための最初のステップとして機能しています。
 */
+
+static void free_array(char **arr)
+{
+	int i = 0;
+	if (!arr)
+		return;
+	while (arr[i])
+	{
+		free(arr[i]);
+		i++;
+	}
+	free(arr);
+}
 
 /*
 ** 環境変数配列 envp から "PATH" で始まる変数の値を探す

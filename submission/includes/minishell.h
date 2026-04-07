@@ -95,8 +95,6 @@ void		consume_space(char **line);
 void		append_operator(t_token **head, char **line);
 void		append_word(t_token **head, char **line);
 
-// token_list_to_argv.c
-char		**token_list_to_argv(t_token *head);
 /*
 parser
 */
@@ -108,7 +106,7 @@ void debug_print_cmds(t_cmd *cmd);
 
 void		execute_command(char **cmdline, char **envp);
 
-void		free_array(char **array);
+
 char		*get_env_path(char **envp);
 char		*join_path(char *dir, char *cmd);
 char		*search_path(char *cmd, char **envp);
