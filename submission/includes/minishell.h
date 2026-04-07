@@ -12,6 +12,7 @@
 # define CROSS "\033[31m[✘]\033[0m"
 # define GREEN "\033[0;32m"
 # define RED "\033[0;31m"
+# define PINK "\033[0;35m"
 # define RESET "\033[0m"
 
 // グローバル変数宣言
@@ -72,11 +73,18 @@ typedef struct s_shell {
 
 /* --- Prototypes --- */
 
+// main.c
 void		minishell_loop(t_shell *shell);
 void		setup_signals(void);
 
+/*
+    tokenizer
+*/
 // tokenizer.c
 t_token		*tokenize(char *line);
+
+// parser.c
+void print_cmds(t_cmd *cmd); //! Debug提出前に削除
 
 // token.c
 t_token		*token_new(char *word, t_token_kind kind);
@@ -92,11 +100,18 @@ void		consume_space(char **line);
 void		append_operator(t_token **head, char **line);
 void		append_word(t_token **head, char **line);
 
-// token_list_to_argv.c
-char		**token_list_to_argv(t_token *head);
+/*
+parser
+*/
+t_cmd		*parse(t_token *tokens);
+
+// debug.c
+void debug_print_tokens(t_token *tokens);
+void debug_print_cmds(t_cmd *cmd);
+
 void		execute_command(char **cmdline, char **envp);
 
-void		free_array(char **array);
+
 char		*get_env_path(char **envp);
 char		*join_path(char *dir, char *cmd);
 char		*search_path(char *cmd, char **envp);
