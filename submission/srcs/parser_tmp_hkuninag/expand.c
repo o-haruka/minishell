@@ -6,18 +6,18 @@
 /*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 08:33:40 by hkuninag          #+#    #+#             */
-/*   Updated: 2026/04/07 08:46:59 by hkuninag         ###   ########.fr       */
+/*   Updated: 2026/04/08 08:20:44 by hkuninag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /*
-** str[*i] が '$' のとき呼ばれる。
-** '$?' なら last_status を文字列化して返す。
-** '$VAR' なら env リストを検索して value を返す。
-** （未定義変数の場合は "" を、'$' 単体の場合は "$" を返す）
-** 展開後、*i を読み終えた文字数分だけ進める。
+** '$' 1つ分を処理して、対応する値の文字列を返す。
+** $? → last_status を文字列化して返す
+** $VAR → env リストを検索して value を返す
+** $ 単体 → "$" をそのまま返す
+** 未定義変数 → "" を返す
 */
 static char	*ft_get_dollar_value(char *str, int *i, t_shell *shell)
 {
@@ -85,7 +85,12 @@ void	ft_expand_args(t_shell *shell)
 		i = 0;
 		while (cmd->args[i]) // このコマンドの全引数をループ
 		{
-			expanded = ft_expand_str(cmd->args[i], shell, false);
+			if (!ft_strchr(cmd->args[i], '$'))　// '$' が無い引数は展開不要なので、そのまま次へ進む
+			{
+				i++;
+				continue ;
+			}
+			expanded = ft_expand_str(cmd->args[i], shell, false); // '$' がある引数は展開
 			free(cmd->args[i]); // 展開前の古い文字列を解放
 			cmd->args[i] = expanded; // 展開後の文字列で上書き
 			i++;
