@@ -6,7 +6,7 @@
 /*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 08:33:40 by hkuninag          #+#    #+#             */
-/*   Updated: 2026/04/08 08:20:44 by hkuninag         ###   ########.fr       */
+/*   Updated: 2026/04/09 08:43:05 by hkuninag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,10 @@ static char	*ft_expand_str(char *str, t_shell *shell, bool in_sq)
 /*
 ** コマンドリスト全体を走査し、各コマンドの args[] を展開する。
 ** 展開前の文字列を free し、展開後の文字列で上書きする。
-** この関数だけが外部（parser.c など）から呼ばれる。
+**
+** コマンドリスト：パイプで繋がったコマンドの連結リスト
+**   例) "ls | grep foo" → [cmd: ls] → [cmd: grep foo] → NULL
+** コマンド：args[] に {"ls", "-la", NULL} のような引数配列を持つ構造体
 */
 void	ft_expand_args(t_shell *shell)
 {
@@ -86,45 +89,15 @@ void	ft_expand_args(t_shell *shell)
 		while (cmd->args[i]) // このコマンドの全引数をループ
 		{
 			if (!ft_strchr(cmd->args[i], '$'))　// '$' が無い引数は展開不要なので、そのまま次へ進む
-			{
 				i++;
-				continue ;
+			else
+			{
+				expanded = ft_expand_str(cmd->args[i], shell, false); // '$' がある引数は展開
+				free(cmd->args[i]); // 展開前の古い文字列を解放
+				cmd->args[i] = expanded; // 展開後の文字列で上書き
+				i++;
 			}
-			expanded = ft_expand_str(cmd->args[i], shell, false); // '$' がある引数は展開
-			free(cmd->args[i]); // 展開前の古い文字列を解放
-			cmd->args[i] = expanded; // 展開後の文字列で上書き
-			i++;
 		}
 		cmd = cmd->next; // 次のコマンドへ（パイプの右側）
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-次はexpand_utils の実装
-*/
