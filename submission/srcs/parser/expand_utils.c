@@ -6,11 +6,12 @@
 /*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 07:49:36 by hkuninag          #+#    #+#             */
-/*   Updated: 2026/04/09 08:16:44 by hkuninag         ###   ########.fr       */
+/*   Updated: 2026/04/10 14:44:48 by hkuninag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "libft.h"
 
 /*
 ** t_env リストを走査し、key が一致する value を返す。
