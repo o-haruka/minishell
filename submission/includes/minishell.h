@@ -114,6 +114,13 @@ int		ft_get_var_len(char *s);
 char	*ft_append_char(char *result, char *str, int *i);
 char	*ft_append_expanded(char *result, char *part);
 
+/*
+env
+*/
+
+// env_init.c
+t_env   *init_env(char **envp);
+
 // debug.c
 void debug_print_tokens(t_token *tokens);
 void debug_print_cmds(t_cmd *cmd);
