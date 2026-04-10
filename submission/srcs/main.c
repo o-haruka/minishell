@@ -40,7 +40,9 @@ void    minishell_loop(t_shell *shell)
 		shell->cmds = parse(shell->tokens);
 		// [Debug] パース結果（t_cmdリスト）を見たいときだけ有効化
 		debug_print_cmds(shell->cmds);
-        
+
+		// $ 展開 (Expander)
+		ft_expand_args(shell);
 
 		//TODO 3. 実行 (Executor) コマンドを実行し、終了ステータスを更新（今後実装）
 		// shell->last_status = execute(shell);
@@ -54,7 +56,7 @@ void    minishell_loop(t_shell *shell)
 int	main(int argc, char **argv, char **envp)
 {
 	t_shell shell; //!全体の状態を持つ構造体
-	
+
 	// t_env *env_list; //! 逆に環境変数用の変数が必要。 環境変数の連結リストの先頭ポインタ
 	(void)argc;
 	(void)argv;
@@ -63,7 +65,7 @@ int	main(int argc, char **argv, char **envp)
 	// shell = (t_shell){0};
 	shell = (t_shell){NULL, NULL, NULL, 0}; //わかりやすい
 	// shell = (t_shell){.env = NULL, .tokens = NULL, .cmds = NULL, .last_status = 0}; //可読性は上がるが長い
-	
+
 	//! 環境変数の取得。envpを解析して、扱いやすい連結リスト(t_env)に変換する
 	// TODO: (展開 (Expander)」の実装に取り掛かる直前)に実装
 	(void)envp;//後で削除
