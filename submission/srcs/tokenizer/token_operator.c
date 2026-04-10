@@ -97,6 +97,8 @@ void append_word(t_token **head, char **line)
     // ここではポインタの引き算で長さを出しています
     //!ft_substrはmalloc使用。どこでfreeする？ token_freeでfree済み
     word_str = ft_substr(start, 0, *line - start);
+    if(!word_str)
+        return;
 
     // 3. リストに追加
     token_add_back(head, token_new(word_str, TK_WORD));
