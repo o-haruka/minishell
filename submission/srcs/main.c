@@ -34,6 +34,13 @@ void    minishell_loop(t_shell *shell)
 
 		// 2. 字句解析 (Lexer)
 		shell->tokens = tokenize(line);
+		if (shell->tokens == NULL)
+		{
+			free(line);
+			// TODO 必要に応じてエラーメッセージを表示
+			// ft_putendl_fd("lexer error", 2);
+			continue;
+		}
 		// [Debug] トークンの中身を見てみる（必要なときだけ呼び出し）
 		// debug_print_tokens(shell->tokens);
 
