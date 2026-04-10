@@ -124,8 +124,10 @@ env
 t_env   *init_env(char **envp);
 
 // debug.c
-void debug_print_tokens(t_token *tokens);
-void debug_print_cmds(t_cmd *cmd);
+void debug_print_tokens(t_token *tokens); //! Debug提出前に削除
+void debug_print_cmds(t_cmd *cmd); //! Debug提出前に削除
+
+// parser/free_cmd.c
 
 void		execute_command(char **cmdline, char **envp);
 
