@@ -21,6 +21,7 @@ SRCS        = main.c \
               parser/parser.c \
 			  parser/expand.c \
 			  parser/expand_utils.c \
+			  env/env_init.c \
               debug.c \
 
 # SRCSの拡張子 .c を .o に置換し、OBJ_PATH を前につける
