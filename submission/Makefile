@@ -19,6 +19,8 @@ SRCS        = main.c \
               tokenizer/token_operator.c \
               tokenizer/token.c \
               parser/parser.c \
+			  parser/expand.c \
+			  parser/expand_utils.c \
               debug.c \
 
 # SRCSの拡張子 .c を .o に置換し、OBJ_PATH を前につける
