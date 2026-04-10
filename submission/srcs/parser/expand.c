@@ -88,7 +88,7 @@ void	ft_expand_args(t_shell *shell)
 		i = 0;
 		while (cmd->args[i]) // このコマンドの全引数をループ
 		{
-			if (!ft_strchr(cmd->args[i], '$'))　// '$' が無い引数は展開不要なので、そのまま次へ進む
+			if (!ft_strchr(cmd->args[i], '$')) // '$' が無い引数は展開不要なので、そのまま次へ進む
 				i++;
 			else
 			{
