@@ -9,7 +9,7 @@ bool is_space(char c) {
 //! | < >だけでいいのか？
 bool is_metachar(char c)
 {
-    return (c == '|' || c == '<' || c == '>' || c == '$');
+    return (c == '|' || c == '<' || c == '>');
 }
 
 void consume_space(char **line) {
