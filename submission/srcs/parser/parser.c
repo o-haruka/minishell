@@ -75,6 +75,10 @@ t_cmd	*parse_command(t_token **current)
 			// 単語を複製して配列に入れる
             // ※ここで ft_strdup を使うのが超重要！(リストから配列に代入したら、元のリストはfreeするため、strdupでwordを保持する)
             cmd->args[i] = ft_strdup((*current)->word);
+            if(!cmd->args[i]){
+                free_cmd(cmd);
+                return NULL;
+            }
             i++;
             // 【重要】ここで現在地（大元のポインタ）を進める！
             *current = (*current)->next;
@@ -84,8 +88,10 @@ t_cmd	*parse_command(t_token **current)
 			// t_redir 構造体を作って繋ぐ
 			// 1. リダイレクト構造体の作成
             t_redir *new_redir = malloc(sizeof(t_redir));
-            if (!new_redir)
+            if (!new_redir){
+                free_cmd(cmd);
                 return (NULL); // ※本当はここで cmd などの free も必要です
+            }
             
             new_redir->kind = (*current)->kind; // "<" や ">" などの種類を保存
             new_redir->next = NULL;
@@ -98,15 +104,21 @@ t_cmd	*parse_command(t_token **current)
             {
                 // ファイル名を自分専用にコピー！
                 new_redir->file = ft_strdup((*current)->word);
-                
+                if (!new_redir->file) {
+                    free(new_redir);
+                    free_cmd(cmd);
+                    return NULL;
+                }
                 // ファイル名も読み終わったので、さらに次へ進める
                 *current = (*current)->next;
             }
             else
             {
                 // 次がファイル名じゃなかった（EOFやパイプだった）場合
-                printf("minishell: syntax error near unexpected token\n");
+                // printf("minishell: syntax error near unexpected token\n");
+				ft_putendl_fd("minishell: syntax error near unexpected token", 2);
                 free(new_redir);
+                free_cmd(cmd);
                 return (NULL); // 構文エラーとしてパースを中断
             }
 
@@ -148,6 +160,10 @@ t_cmd *parse(t_token *tokens)
 		// ここで &current_token とアドレスを渡すことで、関数内で現在地が進む！
         // ヘルパー関数には「現在地ポインタのアドレス（ダブルポインタ）」を渡す
         t_cmd *new_cmd = parse_command(&current_token); 
+        if(!new_cmd){
+            free_cmds_list(cmd_head);
+            return NULL;
+        }
         
         // ... new_cmd を cmd_head に繋ぐ処理 ...
         // 作ったコマンドをリストの末尾に繋ぐ

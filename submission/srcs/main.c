@@ -40,6 +40,14 @@ void    minishell_loop(t_shell *shell)
 
 		//TODO  3. Parser : トークンを解析して shell->cmds に変換（今後実装）
 		shell->cmds = parse(shell->tokens);
+		if (shell->cmds == NULL)
+		{
+			token_free(&(shell->tokens));
+			free(line);
+			// TODO 必要ならエラーメッセージ
+			// ft_putendl_fd("parse error", 2);
+			continue;
+		}
 		// [Debug] パース結果（t_cmdリスト）を見たいときだけ有効化
 		// debug_print_cmds(shell->cmds);
 
@@ -52,7 +60,8 @@ void    minishell_loop(t_shell *shell)
 		// shell->last_status = execute(shell);
 
 		// 4. 後始末
-		token_free(&(shell->tokens)); // リスト全体を解放
+		free_cmds_list(shell->cmds); //コマンドリスト全体を解放
+		token_free(&(shell->tokens)); // トークンリスト全体を解放
 		free(line);              // readlienで確保したメモリを解放
 	}
 }

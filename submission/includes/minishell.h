@@ -84,7 +84,6 @@ void		setup_signals(void);
 t_token		*tokenize(char *line);
 
 // parser.c
-void print_cmds(t_cmd *cmd); //! Debug提出前に削除
 
 // token.c
 t_token		*token_new(char *word, t_token_kind kind);
@@ -104,6 +103,9 @@ void		append_word(t_token **head, char **line);
 parser
 */
 t_cmd		*parse(t_token *tokens);
+// parser_utils.c
+void		free_cmd(t_cmd *cmd);
+void		free_cmds_list(t_cmd *cmd);
 
 // expand.c
 void    ft_expand_args(t_shell *shell);
