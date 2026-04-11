@@ -32,12 +32,27 @@ void    minishell_loop(t_shell *shell)
 
 		// 2. 字句解析 (Lexer)
 		shell->tokens = tokenize(line);
+		if (shell->tokens == NULL)
+		{
+			free(line);
+			// TODO 必要に応じてエラーメッセージを表示
+			// ft_putendl_fd("lexer error", 2);
+			continue;
+		}
 		// [Debug] トークンの中身を見てみる（必要なときだけ呼び出し）
 		// debug_print_tokens(shell->tokens);
 
 
 		//TODO  3. Parser : トークンを解析して shell->cmds に変換（今後実装）
 		shell->cmds = parse(shell->tokens);
+		if (shell->cmds == NULL)
+		{
+			token_free(&(shell->tokens));
+			free(line);
+			// TODO 必要ならエラーメッセージ
+			// ft_putendl_fd("parse error", 2);
+			continue;
+		}
 		// [Debug] パース結果（t_cmdリスト）を見たいときだけ有効化
 		// debug_print_cmds(shell->cmds);
 
@@ -50,7 +65,8 @@ void    minishell_loop(t_shell *shell)
 		// shell->last_status = execute(shell);
 
 		// 4. 後始末
-		token_free(&(shell->tokens)); // リスト全体を解放
+		free_cmds_list(shell->cmds); //コマンドリスト全体を解放
+		token_free(&(shell->tokens)); // トークンリスト全体を解放
 		free(line);              // readlienで確保したメモリを解放
 	}
 }

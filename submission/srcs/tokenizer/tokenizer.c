@@ -5,6 +5,9 @@ t_token *tokenize(char *line)
 	t_token *head; // リストの先頭
 	head = NULL;
 
+	if(line == NULL)
+		return NULL;
+
 	while (*line)
 	{
 		// 1. スペース読み飛ばし

@@ -13,6 +13,8 @@ void append_operator(t_token **head, char **line)
     {
         kind = TK_PIPE;
         operator_str = ft_strdup("|");
+        if (!operator_str)
+            return;
         (*line)++; // 1文字進める
     }
     else if (**line == '>')
@@ -22,12 +24,16 @@ void append_operator(t_token **head, char **line)
         {
             kind = TK_APPEND;
             operator_str = ft_strdup(">>");
+            if (!operator_str)
+                return;
             (*line) += 2; // 2文字進める
         }
         else
         {
             kind = TK_REDIRECT_OUT;
             operator_str = ft_strdup(">");
+            if (!operator_str)
+                return;
             (*line)++; // 1文字進める
         }
     }
@@ -38,12 +44,16 @@ void append_operator(t_token **head, char **line)
         {
             kind = TK_HEREDOC;
             operator_str = ft_strdup("<<");
+            if (!operator_str)
+                return;
             (*line) += 2; // 2文字進める
         }
         else
         {
             kind = TK_REDIRECT_IN;
             operator_str = ft_strdup("<");
+            if (!operator_str)
+                return;
             (*line)++; // 1文字進める
         }
     }
@@ -55,6 +65,11 @@ void append_operator(t_token **head, char **line)
 
     // 2. 新しいノードを作ってリストに繋ぐ
     t_token *new_token = token_new(operator_str, kind);
+    if (!new_token)
+    {
+        free(operator_str); // token_new失敗時にoperator_strがリークしないように
+        return;
+    }
     token_add_back(head, new_token);
 }
 
@@ -95,9 +110,16 @@ void append_word(t_token **head, char **line)
     // ※ ft_substr(文字列, 開始インデックス, 長さ)
     //文字列の一部を切り出して新しい文字列を作成する関数（substring = 部分文字列）。
     // ここではポインタの引き算で長さを出しています
-    //!ft_substrはmalloc使用。どこでfreeする？ token_freeでfree済み
+    //!ft_substrはmalloc使用。どこでfreeする？ 
     word_str = ft_substr(start, 0, *line - start);
+    if(!word_str)
+        return;
 
     // 3. リストに追加
-    token_add_back(head, token_new(word_str, TK_WORD));
+    t_token *new_token = token_new(word_str, TK_WORD);
+    if (!new_token) {
+        free(word_str);
+        return;
+    }
+    token_add_back(head, new_token);
 }
