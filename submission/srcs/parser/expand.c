@@ -21,10 +21,16 @@ static char	*ft_expand_str(char *str, t_shell *shell, bool in_sq)
 	while (str[i])
 	{
 		if (str[i] == '\'' && !in_dq)
+		{
 			in_sq = !in_sq; // シングルクォートの開閉を切り替える
+			i++;
+		}
 		else if (str[i] == '"' && !in_sq)
+		{
 			in_dq = !in_dq; // ダブルクォートの開閉を切り替える
-		if (str[i] == '$' && !in_sq)
+			i++;
+		}
+		else if (str[i] == '$' && !in_sq)
 		{
 			part = ft_get_dollar_value(str, &i, shell);
 			result = ft_append_expanded(result, part);

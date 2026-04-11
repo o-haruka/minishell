@@ -125,15 +125,52 @@ env
 // env_init.c
 t_env   *init_env(char **envp);
 
+// env_utils.c
+void    free_env(t_env *env);
+char    *get_env_value(t_env *env, char *key);
+char    **env_to_envp(t_env *env);
+
 // debug.c
 void debug_print_tokens(t_token *tokens); //! Debug提出前に削除
 void debug_print_cmds(t_cmd *cmd); //! Debug提出前に削除
 
-void		execute_command(char **cmdline, char **envp);
 
+// executor.c
+void    ft_execute(t_shell *shell);
 
 char		*get_env_path(char **envp);
 char		*join_path(char *dir, char *cmd);
 char		*search_path(char *cmd, char **envp);
+
+/*
+ builtins
+*/
+
+//builtin_echo.c
+int     ft_echo(t_cmd *cmd);
+
+// builtins/builtin_pwd.c
+int     ft_pwd(void);
+
+// builtins/builtin_env.c
+int     ft_env(t_shell *shell);
+
+// builtins/builtin_cd.c
+int     ft_cd(t_cmd *cmd, t_shell *shell);
+
+// builtins/builtin_export.c
+int     ft_export(t_cmd *cmd, t_shell *shell);
+
+// builtins/builtin_unset.c
+int     ft_unset(t_cmd *cmd, t_shell *shell);
+
+// builtins/builtin_exit.c
+int     ft_exit(t_cmd *cmd, t_shell *shell);
+
+// executor.c (ビルトイン判定)
+int     is_builtin(char *cmd);
+int     exec_builtin(t_cmd *cmd, t_shell *shell);
+
+
 
 #endif /* MINISHELL_H */

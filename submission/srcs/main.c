@@ -59,7 +59,8 @@ void    minishell_loop(t_shell *shell)
 		// $ 展開 (Expander)
 		ft_expand_args(shell);
 		if (shell->cmds && shell->cmds->args && shell->cmds->args[0])
-			execute_command(shell->cmds->args, shell->envp); // 構造体経由で envp を渡す
+			ft_execute(shell);
+			//旧版(Phase 3 まで使用。Phase 4 から変更)： execute_command(shell->cmds->args, shell->envp); // 構造体経由で envp を渡す
 
 		//TODO 3. 実行 (Executor) コマンドを実行し、終了ステータスを更新（今後実装）
 		// shell->last_status = execute(shell);
