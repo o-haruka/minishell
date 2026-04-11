@@ -3,8 +3,6 @@
 #include <readline/history.h>
 #include <readline/readline.h>
 
-static char	**g_envp;
-
 /*
 ** ループ処理を行う関数
 ** readlineはmallocされた文字列を返すので、使い終わったらfreeが必要です。
@@ -46,7 +44,7 @@ void    minishell_loop(t_shell *shell)
 		// $ 展開 (Expander)
 		ft_expand_args(shell);
 		if (shell->cmds && shell->cmds->args && shell->cmds->args[0])
-			execute_command(shell->cmds->args, g_envp);
+			execute_command(shell->cmds->args, shell->envp); // 構造体経由で envp を渡す
 
 		//TODO 3. 実行 (Executor) コマンドを実行し、終了ステータスを更新（今後実装）
 		// shell->last_status = execute(shell);
@@ -66,14 +64,15 @@ int	main(int argc, char **argv, char **envp)
 	(void)argv;
 
 	// 1. 初期化 (構造体の中身を0クリア) libftのmemsetでもOK
-	// shell = (t_shell){0};
-	shell = (t_shell){NULL, NULL, NULL, 0}; //わかりやすい
-	// shell = (t_shell){.env = NULL, .tokens = NULL, .cmds = NULL, .last_status = 0}; //可読性は上がるが長い
-	g_envp = envp;
+	// 1. t_shell を初期化する（フィールド順: env, cmds, tokens, last_status, envp）
+	// ※ {.env=NULL, .cmds=NULL, ...} と書くと読みやすいが行が長くなるため省略形を使用
+	// envp を構造体で保持
+	shell = (t_shell){NULL, NULL, NULL, 0, envp};
 
 	//! 環境変数の取得。envpを解析して、扱いやすい連結リスト(t_env)に変換する
-	// TODO: (展開 (Expander)」の実装に取り掛かる直前)に実装
 	shell.env = init_env(envp);
+	if (!shell.env)
+		return (1);
 
 	//2. シグナル初期化
 	// setup_signals();

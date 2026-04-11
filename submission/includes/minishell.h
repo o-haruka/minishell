@@ -68,6 +68,7 @@ typedef struct s_shell {
     t_cmd           *cmds;        // パース済みコマンドリスト
     t_token         *tokens;      // Lexer が作ったトークンリスト
     int             last_status;  // $? の値
+	char			**envp;       // mainが受け取る環境変数の文字列配列を、そのまま execve に渡すために保持
 } t_shell;
 
 
@@ -113,6 +114,7 @@ char	*ft_find_env(t_env *env, char *key, int len);
 int		ft_get_var_len(char *s);
 char	*ft_append_char(char *result, char *str, int *i);
 char	*ft_append_expanded(char *result, char *part);
+char    *ft_get_dollar_value(char *str, int *i, t_shell *shell);
 
 /*
 env
