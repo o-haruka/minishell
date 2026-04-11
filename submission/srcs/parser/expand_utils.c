@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   expand_utils.c                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/09 07:49:36 by hkuninag          #+#    #+#             */
-/*   Updated: 2026/04/10 14:44:48 by hkuninag         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "minishell.h"
 #include "libft.h"
 
@@ -72,4 +60,32 @@ char	*ft_append_expanded(char *result, char *part)
 	free(result);
 	free(part);
 	return (joined);
+}
+
+/*
+** '$' 1つ分を処理して、対応する値の文字列を返す。
+** $? → last_status を文字列化して返す
+** $VAR → env リストを検索して value を返す
+** $ 単体 → "$" をそのまま返す
+** 未定義変数 → "" を返す
+*/
+char	*ft_get_dollar_value(char *str, int *i, t_shell *shell)
+{
+	int		len;
+	char	*value;
+
+	*i += 1; // '$' を読み飛ばす
+	if (str[*i] == '?')
+	{
+		*i += 1; // '?' を読み飛ばす
+		return (ft_itoa(shell->last_status)); // 終了コードを文字列に変換して返す
+	}
+	len = ft_get_var_len(str + *i); // '$' 直後の変数名が何文字続くか調べる
+	if (len == 0)
+		return (ft_strdup("$")); // 変数名がない場合は '$' をそのまま返す
+	value = ft_find_env(shell->env, str + *i, len); // env リストから値を検索
+	*i += len; // 変数名の分だけ読み込み位置を進める
+	if (!value)
+		return (ft_strdup("")); // 未定義変数は空文字列を返す
+	return (ft_strdup(value)); // 見つかった値をコピーして返す
 }
