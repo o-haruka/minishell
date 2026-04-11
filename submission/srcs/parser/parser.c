@@ -63,6 +63,9 @@ t_cmd	*parse_command(t_token **current)
         free(cmd);
         return (NULL);
     }
+    // ゼロ初期化（NULL終端保証）
+    for (int j = 0; j < num_words + 1; j++)
+        cmd->args[j] = NULL;
 
 	// 3. トークンを読み進めながら、配列に単語を詰めていく
 	// パイプ (TK_PIPE) か EOF (TK_EOF) が来るまで、1つのコマンドとして読み続ける
