@@ -6,7 +6,7 @@
 /*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 08:33:40 by hkuninag          #+#    #+#             */
-/*   Updated: 2026/04/10 14:44:23 by hkuninag         ###   ########.fr       */
+/*   Updated: 2026/04/11 12:44:35 by hkuninag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,54 +14,32 @@
 #include "libft.h"
 
 /*
-** '$' 1つ分を処理して、対応する値の文字列を返す。
-** $? → last_status を文字列化して返す
-** $VAR → env リストを検索して value を返す
-** $ 単体 → "$" をそのまま返す
-** 未定義変数 → "" を返す
-*/
-static char	*ft_get_dollar_value(char *str, int *i, t_shell *shell)
-{
-	int		len;
-	char	*value;
-
-	*i += 1; // '$' を読み飛ばす
-	if (str[*i] == '?')
-	{
-		*i += 1; // '?' を読み飛ばす
-		return (ft_itoa(shell->last_status)); // 終了コードを文字列に変換して返す
-	}
-	len = ft_get_var_len(str + *i); // '$' 直後の変数名が何文字続くか調べる
-	if (len == 0)
-		return (ft_strdup("$")); // 変数名がない場合は '$' をそのまま返す
-	value = ft_find_env(shell->env, str + *i, len); // env リストから値を検索
-	*i += len; // 変数名の分だけ読み込み位置を進める
-	if (!value)
-		return (ft_strdup("")); // 未定義変数は空文字列を返す
-	return (ft_strdup(value)); // 見つかった値をコピーして返す
-}
-
-/*
-** 文字列 str を1文字ずつ走査する。
-** '$' が来たら ft_get_dollar_value で展開した値を連結する。
-** それ以外の文字は ft_append_char でそのまま連結する。
-** in_sq が true（シングルクォート内）のときは展開しない。
+** 文字列 str を1文字ずつ走査し、展開済みの新しい文字列を返す。
+** クォート状態を追跡しながら走査する。
+** シングルクォート内 → $ を展開しない
+** ダブルクォート内  → $ のみ展開する
+** クォート文字自体は result に残す（除去はしない）
 */
 static char	*ft_expand_str(char *str, t_shell *shell, bool in_sq)
 {
 	char	*result;
 	char	*part;
 	int		i;
+	bool	in_dq;
 
 	result = ft_strdup(""); // 空文字列からスタートして1文字ずつ足す
 	i = 0;
+	in_dq = false;
 	while (str[i])
 	{
+		if (str[i] == '\'' && !in_dq)
+			in_sq = !in_sq; // シングルクォートの開閉を切り替える
+		else if (str[i] == '"' && !in_sq)
+			in_dq = !in_dq; // ダブルクォートの開閉を切り替える
 		if (str[i] == '$' && !in_sq)
 		{
-			// '$' を発見 → 展開した値を result に連結する
 			part = ft_get_dollar_value(str, &i, shell);
-			result = ft_append_expanded(result, part); // result と part を free して新文字列を返す
+			result = ft_append_expanded(result, part);
 		}
 		else
 			result = ft_append_char(result, str, &i); // 通常文字をそのまま result に追加
