@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   env_init.c                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/10 17:12:46 by hkuninag          #+#    #+#             */
-/*   Updated: 2026/04/10 17:18:58 by hkuninag         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "minishell.h"
 #include "libft.h"
 
@@ -60,7 +48,10 @@ t_env	*init_env(char **envp)
 	{
 		node = ft_new_env(envp[i]);
 		if (!node)
-			return (head); // 途中でmallocが失敗したら、そこまでのリストを返す
+		{
+			free_env(head); // 途中失敗 → それまでのリストを全解放
+			return (NULL);  // NULL を返して呼び出し元にエラーを伝える
+		}
 		if (!head)
 			head = node; // 最初のノードをリストの先頭に設定
 		else

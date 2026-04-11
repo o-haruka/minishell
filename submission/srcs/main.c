@@ -71,6 +71,8 @@ int	main(int argc, char **argv, char **envp)
 
 	//! 環境変数の取得。envpを解析して、扱いやすい連結リスト(t_env)に変換する
 	shell.env = init_env(envp);
+	if (!shell.env)
+		return (1);
 
 	//2. シグナル初期化
 	// setup_signals();
