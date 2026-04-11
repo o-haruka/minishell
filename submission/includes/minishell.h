@@ -68,6 +68,7 @@ typedef struct s_shell {
     t_cmd           *cmds;        // パース済みコマンドリスト
     t_token         *tokens;      // Lexer が作ったトークンリスト
     int             last_status;  // $? の値
+	char			**envp;       // mainが受け取る環境変数の文字列配列を、そのまま execve に渡すために保持
 } t_shell;
 
 
