@@ -1,3 +1,5 @@
+/*homura担当*/
+
 #include "libft.h"
 #include "minishell.h"
 #include <stdio.h>
@@ -19,6 +21,13 @@ char	*get_executable_path(char *cmd, char **envp)
 	return (search_path(cmd, envp));
 }
 
+
+/*
+下記のexecute_command関数を 下記のシグネチャに変更
+void    ft_execute(t_shell *shell);
+*/
+
+/*
 void	execute_command(char **cmdline, char **envp)
 {
 	// ここにコマンド実行のロジックを実装します
@@ -93,3 +102,4 @@ void	execute_command(char **cmdline, char **envp)
 		free(cmd_path); // 確保したメモリを解放
 	}
 }
+*/

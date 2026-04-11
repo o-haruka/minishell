@@ -11,7 +11,7 @@ LIB_PATH    = libft
 
 # --- Sources & Objects ---
 SRCS        = main.c \
-              executor.c \
+              executor/executor.c \
               path_finder.c \
               signal.c \
               tokenizer/tokenizer.c \
@@ -23,6 +23,14 @@ SRCS        = main.c \
 			  parser/expand.c \
 			  parser/expand_utils.c \
 			  env/env_init.c \
+			  env/env_utils.c \
+              builtins/builtin_echo.c \
+              builtins/builtin_pwd.c \
+              builtins/builtin_env.c \
+              builtins/builtin_cd.c \
+              builtins/builtin_export.c \
+              builtins/builtin_unset.c \
+              builtins/builtin_exit.c \
               debug.c \
 
 # SRCSの拡張子 .c を .o に置換し、OBJ_PATH を前につける
