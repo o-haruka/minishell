@@ -3,7 +3,41 @@
 #include "libft.h"
 #include "minishell.h"
 #include <sys/wait.h>
-#include <signal.h>
+
+/*
+** 4. 子プロセスの処理 (pid == 0)
+*/
+static void	exec_child(char *path, t_cmd *cmd, char **envp)
+{
+	// execveを使って、子プロセスを別のプログラムに生まれ変わらせる
+	if (execve(path, cmd->args, envp) == -1)
+	{
+		// execveが失敗した場合（通常はここに来ないはずだが、念のため）
+		perror("minishell: execve");
+		free(path);
+		exit(1); // 子プロセスを終了させる
+	}
+}
+
+/*
+** 5. 親プロセスの処理 (pid > 0)
+*/
+static void	exec_parent(pid_t pid, t_shell *shell, char *path)
+{
+	int	status;
+
+	// 親プロセスは子プロセスが終了するのを待つ
+	if (waitpid(pid, &status, 0) == -1)
+		perror("minishell: waitpid");
+	else
+	{
+		// 子プロセスの終了ステータスを last_status に保存する
+		// WIFEXITEDマクロで正常終了か確認し、WEXITSTATUSマクロでステータス値を取り出す
+		if (WIFEXITED(status))
+			shell->last_status = WEXITSTATUS(status);
+	}
+	free(path); // 親プロセスで、もう使わないパスを解放
+}
 
 /*
 ** 単一コマンドを実行する関数
@@ -11,7 +45,6 @@
 void    ft_execute(t_shell *shell)
 {
 	pid_t	pid;
-	int		status;
 	char	*path;
 	t_cmd	*cmd;
 
@@ -42,33 +75,10 @@ void    ft_execute(t_shell *shell)
 		return ;
 	}
 
-	// 4. 子プロセスの処理 (pid == 0)
-	if (pid == 0)
-	{
-		// execveを使って、子プロセスを別のプログラムに生まれ変わらせる
-		if (execve(path, cmd->args, shell->envp) == -1)
-		{
-			// execveが失敗した場合（通常はここに来ないはずだが、念のため）
-			perror("minishell: execve");
-			free(path);
-			exit(1); // 子プロセスを終了させる
-		}
-	}
-	// 5. 親プロセスの処理 (pid > 0)
-	else
-	{
-		// 親プロセスは子プロセスが終了するのを待つ
-		if (waitpid(pid, &status, 0) == -1)
-			perror("minishell: waitpid");
-		else
-		{
-			// 子プロセスの終了ステータスを last_status に保存する
-			// WIFEXITEDマクロで正常終了か確認し、WEXITSTATUSマクロでステータス値を取り出す
-			if (WIFEXITED(status))
-				shell->last_status = WEXITSTATUS(status);
-		}
-		free(path); // 親プロセスで、もう使わないパスを解放
-	}
+	if (pid == 0) //4. 子プロセスの処理 (pid == 0)
+		exec_child(path, cmd, shell->envp);
+	else  //5. 親プロセスの処理 (pid > 0)
+		exec_parent(pid, shell, path);
 }
 
 
