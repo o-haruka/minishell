@@ -12,7 +12,7 @@ LIB_PATH    = libft
 # --- Sources & Objects ---
 SRCS        = main.c \
               executor/executor.c \
-              path_finder.c \
+              executor/path.c \
               signal.c \
               tokenizer/tokenizer.c \
               tokenizer/tokenizer_utils.c \
