@@ -84,8 +84,6 @@ void		setup_signals(void);
 // tokenizer.c
 t_token		*tokenize(char *line);
 
-// parser.c
-
 // token.c
 t_token		*token_new(char *word, t_token_kind kind);
 void		token_add_back(t_token **head, t_token *new_token);
@@ -103,7 +101,9 @@ void		append_word(t_token **head, char **line);
 /*
 parser
 */
+// parser.c
 t_cmd		*parse(t_token *tokens);
+
 // parser_utils.c
 void		free_cmd(t_cmd *cmd);
 void		free_cmds_list(t_cmd *cmd);
@@ -121,7 +121,6 @@ char    *ft_get_dollar_value(char *str, int *i, t_shell *shell);
 /*
 env
 */
-
 // env_init.c
 t_env   *init_env(char **envp);
 
@@ -134,11 +133,13 @@ char    **env_to_envp(t_env *env);
 void debug_print_tokens(t_token *tokens); //! Debug提出前に削除
 void debug_print_cmds(t_cmd *cmd); //! Debug提出前に削除
 
-
+/*
+excecter
+*/
 // executor.c
 void    ft_execute(t_shell *shell);
 
-char		*join_path(char *dir, char *cmd);
+// path.c
 char *search_path(char *cmd, t_env *env);
 
 /*
