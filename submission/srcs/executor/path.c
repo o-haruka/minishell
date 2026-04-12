@@ -30,7 +30,7 @@ static void free_array(char **arr)
 ** /bin/ls (lsを足す)
 ** `PATH変数で見つかったディレクトリ` + `/` + `コマンド名`
 */
-char	*join_path(char *dir, char *cmd)
+static char	*join_path(char *dir, char *cmd)
 {
 	char	*tmp;
 	char	*full_path;
