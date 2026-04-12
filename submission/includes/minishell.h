@@ -138,7 +138,6 @@ void debug_print_cmds(t_cmd *cmd); //! Debug提出前に削除
 // executor.c
 void    ft_execute(t_shell *shell);
 
-char		*get_env_path(char **envp);
 char		*join_path(char *dir, char *cmd);
 char *search_path(char *cmd, t_env *env);
 
