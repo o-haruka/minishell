@@ -140,7 +140,7 @@ void    ft_execute(t_shell *shell);
 
 char		*get_env_path(char **envp);
 char		*join_path(char *dir, char *cmd);
-char		*search_path(char *cmd, char **envp);
+char *search_path(char *cmd, t_env *env);
 
 /*
  builtins

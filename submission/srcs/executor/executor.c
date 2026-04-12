@@ -2,24 +2,20 @@
 
 #include "libft.h"
 #include "minishell.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
 #include <sys/wait.h>
-#include <unistd.h>
 
-char	*get_executable_path(char *cmd, char **envp)
-{
-	// コマンド自体に '/' が含まれている場合はそのまま使う
-	// (例: /bin/ls, ./minishell)
-	if (strchr(cmd, '/'))
-	{
-		return (ft_strdup(cmd));
-	}
-	// それ以外はPATH環境変数から探す
-	return (search_path(cmd, envp));
-}
+// search_pathに含まれているので削除する
+// char	*get_executable_path(char *cmd, char **envp)
+// {
+// 	// コマンド自体に '/' が含まれている場合はそのまま使う
+// 	// (例: /bin/ls, ./minishell)
+// 	if (strchr(cmd, '/'))
+// 	{
+// 		return (ft_strdup(cmd));
+// 	}
+// 	// それ以外はPATH環境変数から探す
+// 	return (search_path(cmd, envp));
+// }
 
 
 /*
