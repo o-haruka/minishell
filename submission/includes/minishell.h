@@ -142,6 +142,10 @@ void    ft_execute(t_shell *shell);
 // path.c
 char *search_path(char *cmd, t_env *env);
 
+// redirect.c
+int     ft_apply_redirs(t_cmd *cmd);
+
+
 /*
  builtins
 */

@@ -13,6 +13,7 @@ LIB_PATH    = libft
 SRCS        = main.c \
               executor/executor.c \
               executor/path.c \
+			  executor/redirect.c \
               signal.c \
               tokenizer/tokenizer.c \
               tokenizer/tokenizer_utils.c \

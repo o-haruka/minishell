@@ -9,6 +9,14 @@
 */
 static void	exec_child(char *path, t_cmd *cmd, char **envp)
 {
+	// execve実行の前に fd を付け替える。
+	// execve で起動するコマンドは、ファイルを読み書きするために fd 0番・1番だけを使う。それ以外は見ない。
+	// execve 後は fd を変更できないため、先に付け替えておく必要がある
+	if (ft_apply_redirs(cmd) == -1)
+	{
+		free(path);
+		exit(1);
+	}
 	// execveを使って、子プロセスを別のプログラムに生まれ変わらせる
 	if (execve(path, cmd->args, envp) == -1)
 	{
