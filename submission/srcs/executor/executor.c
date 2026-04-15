@@ -61,6 +61,15 @@ void    ft_execute(t_shell *shell)
 	if (!cmd || !cmd->args || !cmd->args[0])
 		return ;
 
+	// ★ 1. もしビルトインコマンドだったら？
+    if (is_builtin(cmd->args[0]))
+    {
+        // execve は絶対に呼ばない！  ただのC言語の関数（ft_cdやft_pwdなど）を呼び出すだけ。
+        shell->last_status = exec_builtin(cmd, shell);
+        return ; // ★重要: 関数が終わったら、下の fork や execve に進まずにそのまま帰る！
+    }
+
+	// ★ 2. ビルトインじゃなかったら？（外部コマンド）
 	// 2. 実行ファイルの絶対パスを探す
 	path = search_path(cmd->args[0], shell->env);
 	if (!path)

@@ -25,6 +25,7 @@ SRCS        = main.c \
 			  parser/expand_utils.c \
 			  env/env_init.c \
 			  env/env_utils.c \
+              builtins/builtin_utils.c \
               builtins/builtin_echo.c \
               builtins/builtin_pwd.c \
               builtins/builtin_env.c \
