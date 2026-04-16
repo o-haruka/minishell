@@ -171,7 +171,7 @@ int     ft_unset(t_cmd *cmd, t_shell *shell);
 // builtins/builtin_exit.c
 int     ft_exit(t_cmd *cmd, t_shell *shell);
 
-// executor.c (ビルトイン判定)
+// builtin_utils.c (ビルトイン判定)
 int     is_builtin(char *cmd);
 int     exec_builtin(t_cmd *cmd, t_shell *shell);
 
