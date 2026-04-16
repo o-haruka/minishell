@@ -128,6 +128,7 @@ t_env   *init_env(char **envp);
 void    free_env(t_env *env);
 char    *get_env_value(t_env *env, char *key);
 char    **env_to_envp(t_env *env);
+int update_env_value(t_env **env, char *key, char *new_value);
 
 // debug.c
 void debug_print_tokens(t_token *tokens); //! Debug提出前に削除
