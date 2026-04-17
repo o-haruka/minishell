@@ -31,11 +31,11 @@ int exec_builtin(t_cmd *cmd, t_shell *shell)
         return (ft_echo(cmd));
     if (ft_strncmp(name, "cd", 3) == 0)
         return (ft_cd(cmd, shell));
-    // 他のコマンドも実装したらここに追加していきます
-    /*
-    if (ft_strncmp(name, "export", 7) == 0) return (ft_export(cmd, shell));
-    if (ft_strncmp(name, "unset", 6) == 0) return (ft_unset(cmd, shell));
-    if (ft_strncmp(name, "exit", 5) == 0) return (ft_exit(cmd, shell));
-    */
+    if (ft_strncmp(name, "export", 7) == 0)
+		return (ft_export(cmd, shell));
+    if (ft_strncmp(name, "unset", 6) == 0)
+		return (ft_unset(cmd, shell));
+    if (ft_strncmp(name, "exit", 5) == 0)
+		return (ft_exit(cmd, shell));
     return (0);
 }
