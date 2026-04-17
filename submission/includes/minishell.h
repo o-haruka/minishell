@@ -128,6 +128,7 @@ t_env   *init_env(char **envp);
 void    free_env(t_env *env);
 char    *get_env_value(t_env *env, char *key);
 char    **env_to_envp(t_env *env);
+int update_env_value(t_env **env, char *key, char *new_value);
 
 // debug.c
 void debug_print_tokens(t_token *tokens); //! Debug提出前に削除
@@ -171,7 +172,7 @@ int     ft_unset(t_cmd *cmd, t_shell *shell);
 // builtins/builtin_exit.c
 int     ft_exit(t_cmd *cmd, t_shell *shell);
 
-// executor.c (ビルトイン判定)
+// builtin_utils.c (ビルトイン判定)
 int     is_builtin(char *cmd);
 int     exec_builtin(t_cmd *cmd, t_shell *shell);
 
