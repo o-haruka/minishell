@@ -41,19 +41,18 @@ static int	apply_heredoc(char *delimiter);
 */
 static int	open_redir_fd(t_redir *redir, int *target_fd)
 {
-    if (redir->kind == TK_REDIRECT_IN)
+    if (redir->kind == TK_REDIRECT_IN) // '<' のとき : ファイルをキーボード入力の代わりに読む
     {
         *target_fd = STDIN_FILENO; // 0番(stdin)を付け替え対象にする
         return (open(redir->file, O_RDONLY)); // 読み込み専用で開く
     }
-    if (redir->kind == TK_REDIRECT_OUT)
+    if (redir->kind == TK_REDIRECT_OUT) // '>' のとき : 画面に出す代わりにファイルへ上書きする
     {
         *target_fd = STDOUT_FILENO;  // 1番(stdout)を付け替え対象にする
-        return (open(redir->file, O_WRONLY | O_CREAT | O_TRUNC, 0644));
-			// 上書きで開く（なければ作る）
-			// 0644: 6=所有者rw(読み書き可), 4=グループr(読み込みのみ), 4=他人r(読み込みのみ)
+        return (open(redir->file, O_WRONLY | O_CREAT | O_TRUNC, 0644)); // 書き込み用で開く: なければ作成、あれば中身を空にして先頭から書く（上書き）
+			// 0644: 省略不可。O_CREATE をつけた時に必須。6=所有者rw(読み書き可), 4=グループr(読み込みのみ), 4=他人r(読み込みのみ)
     }
-    if (redir->kind == TK_APPEND)
+    if (redir->kind == TK_APPEND) // '>>' のとき : 画面に出す代わりにファイルの末尾へ書き足す
     {
         *target_fd = STDOUT_FILENO; // 1番(stdout)を付け替え対象にする
         return (open(redir->file, O_WRONLY | O_CREAT | O_APPEND, 0644)); // 追記で開く（なければ作る）
