@@ -35,15 +35,17 @@ static void	exec_parent(pid_t pid, t_shell *shell, char *path)
 	int	status;
 
 	// 親プロセスは子プロセスが終了するのを待つ
-	if (waitpid(pid, &status, 0) == -1)
+	if (waitpid(pid, &status, 0) == -1){
 		perror("minishell: waitpid");
-	else
-	{
-		// 子プロセスの終了ステータスを last_status に保存する
-		// WIFEXITEDマクロで正常終了か確認し、WEXITSTATUSマクロでステータス値を取り出す
-		if (WIFEXITED(status))
-			shell->last_status = WEXITSTATUS(status);
+		free(path);
+		return;
 	}
+	
+	// 子プロセスの終了ステータスを last_status に保存する
+	// WIFEXITEDマクロで正常終了か確認し、WEXITSTATUSマクロでステータス値を取り出す
+	if (WIFEXITED(status))
+		shell->last_status = WEXITSTATUS(status);
+	
 	free(path); // 親プロセスで、もう使わないパスを解放
 }
 
