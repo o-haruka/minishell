@@ -146,6 +146,14 @@ char *search_path(char *cmd, t_env *env);
 // redirect.c
 int     ft_apply_redirs(t_cmd *cmd);
 
+// executor/pipe.c
+void    ft_execute_pipeline(t_shell *shell);
+
+// executor/pipe_utils.c
+int     count_cmds(t_cmd *cmd);
+int     open_all_pipes(int (*pipes)[2], int pipe_count);
+void    close_all_pipes(int (*pipes)[2], int pipe_count);
+void    wait_all_cmds(pid_t *pids, int cmd_count, t_shell *shell);
 
 /*
  builtins
