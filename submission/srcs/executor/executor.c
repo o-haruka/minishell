@@ -40,12 +40,12 @@ static void	exec_parent(pid_t pid, t_shell *shell, char *path)
 		free(path);
 		return;
 	}
-	
+
 	// 子プロセスの終了ステータスを last_status に保存する
 	// WIFEXITEDマクロで正常終了か確認し、WEXITSTATUSマクロでステータス値を取り出す
 	if (WIFEXITED(status))
 		shell->last_status = WEXITSTATUS(status);
-	
+
 	free(path); // 親プロセスで、もう使わないパスを解放
 }
 
@@ -63,6 +63,15 @@ void    ft_execute(t_shell *shell)
 	if (!cmd || !cmd->args || !cmd->args[0])
 		return ;
 
+	// ★★★ パイプ実装に伴い追加 ★★★
+    // cmd->next != NULL = パイプで繋がったコマンドが存在する
+    // 例: ls | grep → cmd[ls]->next = cmd[grep] → NULL ではない
+    // 例: ls         → cmd[ls]->next = NULL      → ここには入らない
+    if (cmd->next != NULL)
+    {
+        ft_execute_pipeline(shell); // パイプライン専用関数に丸投げ
+        return ;                    // 以降の単一コマンド処理には進まない
+    }
 	// ★ 1. もしビルトインコマンドだったら？
     if (is_builtin(cmd->args[0]))
     {

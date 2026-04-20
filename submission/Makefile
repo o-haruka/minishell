@@ -12,6 +12,8 @@ LIB_PATH    = libft
 # --- Sources & Objects ---
 SRCS        = main.c \
               executor/executor.c \
+              executor/pipe.c \
+			  executor/pipe_utils.c \
               executor/path.c \
 			  executor/redirect.c \
               signal.c \
