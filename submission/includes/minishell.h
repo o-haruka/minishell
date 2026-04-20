@@ -93,6 +93,7 @@ void		token_free(t_token **head);
 bool		is_space(char c);
 bool		is_metachar(char c);
 void		consume_space(char **line);
+int			has_unclosed_quote(char *line);
 
 // token_operator.c
 void		append_operator(t_token **head, char **line);

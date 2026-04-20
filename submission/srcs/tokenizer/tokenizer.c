@@ -1,13 +1,29 @@
 #include "minishell.h"
+#include "libft.h"
 
+
+/*
+** 入力文字列 line をトークンに分割し、連結リストとして返す。
+** 以下の順で処理する：
+**   1. クォートの閉じ忘れチェック（エラーなら NULL を返す）
+**   2. スペースを読み飛ばす
+**   3. メタ文字（| < >）はオペレータトークンとして追加
+**   4. それ以外は単語トークンとして追加
+**   5. 終端に TK_EOF トークンを追加して返す
+*/
 t_token *tokenize(char *line)
 {
 	t_token *head; // リストの先頭
-	head = NULL;
 
+	head = NULL;
 	if(line == NULL)
 		return NULL;
-
+	if (has_unclosed_quote(line)) // 閉じ忘れクォートがあればエラー
+	{
+		ft_putendl_fd("minishell: syntax error: unclosed quote",
+			STDERR_FILENO);
+		return (NULL); // NULL を返すと minishell_loop 側でエラー扱いになる
+	}
 	while (*line)
 	{
 		// 1. スペース読み飛ばし

@@ -83,6 +83,11 @@ void append_word(t_token **head, char **line)
     start = *line; // 1. 開始位置をメモ
     quote = 0;     // 0は「クォートに入っていない」状態
 
+
+    // クォート内のスペースやメタ文字を単語の区切りとして
+    // 扱わないために、クォートの開閉状態を追跡する。
+    // 例: "hello world" → スペースを無視して1トークンにする
+
     //TODO: 閉じクォートがないときの処理がないのでは？？
     while (**line)
     {
@@ -110,7 +115,7 @@ void append_word(t_token **head, char **line)
     // ※ ft_substr(文字列, 開始インデックス, 長さ)
     //文字列の一部を切り出して新しい文字列を作成する関数（substring = 部分文字列）。
     // ここではポインタの引き算で長さを出しています
-    //!ft_substrはmalloc使用。どこでfreeする？ 
+    //!ft_substrはmalloc使用。どこでfreeする？
     word_str = ft_substr(start, 0, *line - start);
     if(!word_str)
         return;
