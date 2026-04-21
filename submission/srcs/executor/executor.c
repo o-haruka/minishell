@@ -43,8 +43,21 @@ static void	exec_parent(pid_t pid, t_shell *shell, char *path)
 
 	// 子プロセスの終了ステータスを last_status に保存する
 	// WIFEXITEDマクロで正常終了か確認し、WEXITSTATUSマクロでステータス値を取り出す
-	if (WIFEXITED(status))
+	if (WIFEXITED(status)) // ★普通に終了した場合 (exitなど)
 		shell->last_status = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status)) // ★子プロセスがシグナルで強制終了した場合
+	{
+		shell->last_status = 128 + WTERMSIG(status); // 例: 128 + 2 = 130
+		
+		// bashの仕様に合わせるための見た目の処理
+		if (WTERMSIG(status) == SIGQUIT)
+			ft_putendl_fd("Quit: 3", STDERR_FILENO); // Ctrl-\ で殺されたら Quit: 3 を出す
+		else if (WTERMSIG(status) == SIGINT)
+			write(STDERR_FILENO, "\n", 1);           // ★ これが ^C の後に改行を入れてくれる！
+	}
+
+	// ★ 追加：待機が終わったので、親プロセスを「無視」から「元のハンドラ設定」に戻す
+	setup_signals();
 
 	free(path); // 親プロセスで、もう使わないパスを解放
 }
@@ -103,10 +116,14 @@ void    ft_execute(t_shell *shell)
 		return ;
 	}
 
-	if (pid == 0) //4. 子プロセスの処理 (pid == 0)
+	if (pid == 0){ //4. 子プロセスの処理 (pid == 0)
+		set_signal_for_child(); //OSのデフォルト（強制終了）
 		exec_child(path, cmd, shell->envp);
-	else  //5. 親プロセスの処理 (pid > 0)
+	}
+	else{  //5. 親プロセスの処理 (pid > 0)
+		set_signal_for_parent_wait(); //シグナル飛んできても無視
 		exec_parent(pid, shell, path);
+	}
 }
 
 
