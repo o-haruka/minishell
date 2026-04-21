@@ -26,7 +26,40 @@ void	sigint_handler(int sig)
 	// ※終了ステータスは呼び出し元で設定することが多い
 }
 
-void	setup_signals(void)
+/*
+** コマンド実行中（waitpid中）の親プロセス用のシグナル設定
+** SIGINT（Ctrl-C）  -> 無視 (SIG_IGN)（子プロセスにのみ伝播）
+** SIGQUIT（Ctrl-\） -> 無視 (SIG_IGN)
+** これにより、親シェルがコマンド実行中に割り込まれないようにする。
+*/
+void	set_signal_for_parent_wait(void)
+{
+	struct sigaction	sa;
+
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	sa.sa_handler = SIG_IGN; // 無視する設定
+	sigaction(SIGINT, &sa, NULL);
+	sigaction(SIGQUIT, &sa, NULL);
+}
+
+/*
+** execveで実行される子プロセス用のシグナル設定
+** SIGINT（Ctrl-C）  -> デフォルトの挙動に戻す (SIG_DFL)
+** SIGQUIT（Ctrl-\） -> デフォルトの挙動に戻す (SIG_DFL)
+** これにより、lsやcatなどの外部コマンドが通常通りシグナルで終了できる。
+*/
+void	set_signal_for_child(void)
+{
+	struct sigaction	sa;
+
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	sa.sa_handler = SIG_DFL; // デフォルト動作（強制終了）に戻す
+	sigaction(SIGINT, &sa, NULL);
+	sigaction(SIGQUIT, &sa, NULL);
+}
+
 /*
 ** 入力待ち時のシグナル設定（メインループ用）
 **  - SIGINT: 独自ハンドラ（プロンプトをリセット）
