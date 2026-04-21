@@ -18,13 +18,17 @@ void    minishell_loop(t_shell *shell)
 		line = readline(GREEN "minishell> " RESET); //TODO free必須(readlineはmallocする)
 		if (line == NULL){
 			//TODO 本家ではここに(break前に)printf("exit\n");が入るらしい
+			ft_putendl_fd("exit", STDOUT_FILENO);
 			break ;
 		}
 		// シグナルが発生した場合は継続
 		if (g_signal == SIGINT)
 		{
-			free(line);
-			continue ;
+			// Ctrl-Cが押されていたら、$? を 130 (128 + 2) に更新する
+			// 
+			shell->last_status = 128 + g_signal;
+			// free(line);
+			// continue ;
 		}
 		//★-----------------------------------★
 		// 1. 読み込み
@@ -102,7 +106,7 @@ int	main(int argc, char **argv, char **envp)
 		return (1);
 
 	//2. シグナル初期化
-	// setup_signals();
+	setup_signals();
 
 	//3. メインループの開始
 	minishell_loop(&shell);
