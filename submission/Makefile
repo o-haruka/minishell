@@ -16,6 +16,7 @@ SRCS        = main.c \
 			  executor/pipe_utils.c \
               executor/path.c \
 			  executor/redirect.c \
+			  executor/redirect_heredoc.c \
               signal.c \
               tokenizer/tokenizer.c \
               tokenizer/tokenizer_utils.c \

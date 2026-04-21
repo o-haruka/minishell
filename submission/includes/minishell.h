@@ -147,6 +147,9 @@ char *search_path(char *cmd, t_env *env);
 // redirect.c
 int     ft_apply_redirs(t_cmd *cmd);
 
+// redirect_heredoc.c
+int	apply_heredoc(char *delimiter);
+
 // executor/pipe.c
 void    ft_execute_pipeline(t_shell *shell);
 
