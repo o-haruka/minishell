@@ -1,130 +1,81 @@
 #include "minishell.h"
 #include "libft.h"
 
-// 演算子トークンを作成し、リストに追加し、入力読み込み位置を進める
-void append_operator(t_token **head, char **line)
+// malloc失敗時は 0 を返し、成功時は 1 を返す
+// 新しいノードを作ってリストに繋ぐ
+static int	add_operator_token(t_token **head, char *operator_str, t_token_kind kind)
 {
-    t_token_kind kind;
-    char *operator_str;//!わかりにくいのでoperator_strがいいかも
-    operator_str = NULL;
+	t_token	*new_token;
 
-    // 1. 種類と文字列の決定
-    if (**line == '|')
-    {
-        kind = TK_PIPE;
-        operator_str = ft_strdup("|");
-        if (!operator_str)
-            return;
-        (*line)++; // 1文字進める
-    }
-    else if (**line == '>')
-    {
-        // 次の文字を「先読み」
-        if ((*line)[1] == '>')//「現在の場所から見て何番目か？」を表している
-        {
-            kind = TK_APPEND;
-            operator_str = ft_strdup(">>");
-            if (!operator_str)
-                return;
-            (*line) += 2; // 2文字進める
-        }
-        else
-        {
-            kind = TK_REDIRECT_OUT;
-            operator_str = ft_strdup(">");
-            if (!operator_str)
-                return;
-            (*line)++; // 1文字進める
-        }
-    }
-    else if (**line == '<')
-    {
-        // 次の文字を「先読み」
-        if ((*line)[1] == '<')
-        {
-            kind = TK_HEREDOC;
-            operator_str = ft_strdup("<<");
-            if (!operator_str)
-                return;
-            (*line) += 2; // 2文字進める
-        }
-        else
-        {
-            kind = TK_REDIRECT_IN;
-            operator_str = ft_strdup("<");
-            if (!operator_str)
-                return;
-            (*line)++; // 1文字進める
-        }
-    }
-    else
-    {
-        // 不明な演算子（エラー処理を追加することも可能）
-        return;
-    }
-
-    // 2. 新しいノードを作ってリストに繋ぐ
-    t_token *new_token = token_new(operator_str, kind);
-    if (!new_token)
-    {
-        free(operator_str); // token_new失敗時にoperator_strがリークしないように
-        return;
-    }
-    token_add_back(head, new_token);
+	if (!operator_str)
+		return (0);
+	new_token = token_new(operator_str, kind);
+	if (!new_token)
+	{
+		free(operator_str);
+		return (0);
+	}
+	token_add_back(head, new_token);
+	return (1);
 }
 
-// 単語の終了位置までポインタを進め、トークンを作成する
-void append_word(t_token **head, char **line)
+// 演算子トークンを作成し、リストに追加し、入力読み込み位置を進める
+static int append_pipe(t_token **head, char **line)
 {
-    char *start;
-    char *word_str;
-    char quote;
+	char *operator_str;
+	(*line)++; // 1文字進める
+	operator_str = ft_strdup("|");
+    if(operator_str == NULL)
+        return (0);
+    return (add_operator_token(head, operator_str, TK_PIPE));
+}
 
-    start = *line; // 1. 開始位置をメモ
-    quote = 0;     // 0は「クォートに入っていない」状態
+static int	append_redirect_in(t_token **head, char **line)
+{
+	char	*operator_str;
 
+	if ((*line)[1] == '<') // 次の文字を「先読み」 //「現在の場所から見て何番目か？」を表している
+	{
+		(*line) += 2; // 2文字進める
+		operator_str = ft_strdup("<<");
+        if(operator_str == NULL)
+            return (0);
+		return (add_operator_token(head, operator_str, TK_HEREDOC));
+	}
+	(*line)++;
+	operator_str = ft_strdup("<");
+    if(operator_str == NULL)
+        return (0);
+	return (add_operator_token(head, operator_str, TK_REDIRECT_IN));
+}
 
-    // クォート内のスペースやメタ文字を単語の区切りとして
-    // 扱わないために、クォートの開閉状態を追跡する。
-    // 例: "hello world" → スペースを無視して1トークンにする
+static int	append_redirect_out(t_token **head, char **line)
+{
+	char	*operator_str;
 
-    //TODO: 閉じクォートがないときの処理がないのでは？？
-    while (**line)
-    {
-        // A. クォート中の処理
-        if (quote)
-        {
-            if (**line == quote) // 閉じクォートが見つかったら
-                quote = 0;       // 通常モードに戻る
-        }
-        // B. 通常モードの処理
-        else
-        {
-            // スペースかメタ文字が来たら、単語の終わり！
-            if (is_space(**line) || is_metachar(**line))
-                break;
+	if ((*line)[1] == '>') // 次の文字を「先読み」 //「現在の場所から見て何番目か？」を表している
+	{
+		(*line) += 2; // 2文字進める
+		operator_str = ft_strdup(">>");
+        if(operator_str == NULL)
+            return (0);
+		return (add_operator_token(head, operator_str, TK_APPEND));
+	}
+	(*line)++;
+	operator_str = ft_strdup(">");
+    if(operator_str == NULL)
+        return (0);
+	return (add_operator_token(head, operator_str, TK_REDIRECT_OUT));
+}
 
-            // クォートの始まりを見つけたら、クォートモードへ
-            if (**line == '\'' || **line == '\"')
-                quote = **line; // ' か " を記録する
-        }
-        (*line)++; // 次の文字へ
-    }
+int append_operator(t_token **head, char **line)
+{
+    if (**line == '|')
+		return (append_pipe(head, line));
+    else if (**line == '>')
+        return (append_redirect_out(head, line));
+    else if (**line == '<')
+        return (append_redirect_in(head, line));
 
-    // 2. 切り出し (start から 現在の *line まで)
-    // ※ ft_substr(文字列, 開始インデックス, 長さ)
-    //文字列の一部を切り出して新しい文字列を作成する関数（substring = 部分文字列）。
-    // ここではポインタの引き算で長さを出しています
-    //!ft_substrはmalloc使用。どこでfreeする？
-    word_str = ft_substr(start, 0, *line - start);
-    if(!word_str)
-        return;
-
-    // 3. リストに追加
-    t_token *new_token = token_new(word_str, TK_WORD);
-    if (!new_token) {
-        free(word_str);
-        return;
-    }
-    token_add_back(head, new_token);
+    return (1);
 }

@@ -21,6 +21,7 @@ SRCS        = main.c \
               tokenizer/tokenizer.c \
               tokenizer/tokenizer_utils.c \
               tokenizer/token_operator.c \
+              tokenizer/token_word.c \
               tokenizer/token.c \
               parser/parser.c \
               parser/parser_utils.c \

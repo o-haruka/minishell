@@ -108,8 +108,8 @@ void		consume_space(char **line);
 int			has_unclosed_quote(char *line);
 
 // token_operator.c
-void		append_operator(t_token **head, char **line);
-void		append_word(t_token **head, char **line);
+int		append_operator(t_token **head, char **line);
+int		append_word(t_token **head, char **line);
 
 /*----------------------------------------
 parser
