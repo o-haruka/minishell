@@ -15,10 +15,12 @@
 # define PINK "\033[0;35m"
 # define RESET "\033[0m"
 
-// グローバル変数宣言
+// global
 extern int	g_signal;
 
-/* --- Enum & Structs --- */
+/***********************************
+Enum & Structs
+***********************************/
 
 // トークンの種類(識別子)を表す列挙型enum
 typedef enum e_token_kind
@@ -72,15 +74,25 @@ typedef struct s_shell {
 } t_shell;
 
 
-/* --- Prototypes --- */
+/************************************
+Prototypes
+************************************/
 
-// main.c
+/*----------------------------------------
+main (main.c)
+----------------------------------------*/
 void		minishell_loop(t_shell *shell);
-void		setup_signals(void);
 
-/*
-    tokenizer
-*/
+/*----------------------------------------
+signal (signal.c)
+----------------------------------------*/
+void		setup_signals(void);
+void		set_signal_for_parent_wait(void);
+void		set_signal_for_child(void);
+
+/*----------------------------------------
+tokenizer
+----------------------------------------*/
 // tokenizer.c
 t_token		*tokenize(char *line);
 
@@ -99,9 +111,9 @@ int			has_unclosed_quote(char *line);
 void		append_operator(t_token **head, char **line);
 void		append_word(t_token **head, char **line);
 
-/*
+/*----------------------------------------
 parser
-*/
+----------------------------------------*/
 // parser.c
 t_cmd		*parse(t_token *tokens);
 
@@ -119,9 +131,9 @@ char	*ft_append_char(char *result, char *str, int *i);
 char	*ft_append_expanded(char *result, char *part);
 char    *ft_get_dollar_value(char *str, int *i, t_shell *shell);
 
-/*
+/*----------------------------------------
 env
-*/
+----------------------------------------*/
 // env_init.c
 t_env   *init_env(char **envp);
 
@@ -131,13 +143,9 @@ char    *get_env_value(t_env *env, char *key);
 char    **env_to_envp(t_env *env);
 int update_env_value(t_env **env, char *key, char *new_value);
 
-// debug.c
-void debug_print_tokens(t_token *tokens); //! Debug提出前に削除
-void debug_print_cmds(t_cmd *cmd); //! Debug提出前に削除
-
-/*
+/*----------------------------------------
 excecter
-*/
+----------------------------------------*/
 // executor.c
 void    ft_execute(t_shell *shell);
 
@@ -159,9 +167,9 @@ int     open_all_pipes(int (*pipes)[2], int pipe_count);
 void    close_all_pipes(int (*pipes)[2], int pipe_count);
 void    wait_all_cmds(pid_t *pids, int cmd_count, t_shell *shell);
 
-/*
- builtins
-*/
+/*----------------------------------------
+builtins
+----------------------------------------*/
 
 //builtin_echo.c
 int     ft_echo(t_cmd *cmd);
@@ -189,5 +197,11 @@ int     is_builtin(char *cmd);
 int     exec_builtin(t_cmd *cmd, t_shell *shell);
 
 
+/*----------------------------------------
+others
+----------------------------------------*/
+// debug.c
+void debug_print_tokens(t_token *tokens); //! Debug提出前に削除
+void debug_print_cmds(t_cmd *cmd); //! Debug提出前に削除
 
 #endif /* MINISHELL_H */
