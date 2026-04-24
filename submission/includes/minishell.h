@@ -121,6 +121,9 @@ t_cmd		*parse(t_token *tokens);
 void		free_cmd(t_cmd *cmd);
 void		free_cmds_list(t_cmd *cmd);
 
+// parser_redirection.c
+int handle_redirection(t_cmd *cmd, t_token **current);
+
 // expand.c
 void    ft_expand_args(t_shell *shell);
 
