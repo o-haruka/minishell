@@ -8,15 +8,17 @@
 ** ダブルクォート内  → $ のみ展開する
 ** クォート文字自体は result に追加せず除去する
 */
-static char	*ft_expand_str(char *str, t_shell *shell, bool in_sq)
+static char	*ft_expand_str(char *str, t_shell *shell)
 {
 	char	*result;
 	char	*part;
 	int		i;
+	bool	in_sq;
 	bool	in_dq;
 
 	result = ft_strdup(""); // 空文字列からスタートして1文字ずつ足す
 	i = 0;
+	in_sq = false;
 	in_dq = false;
 	while (str[i])
 	{
@@ -62,7 +64,7 @@ void	ft_expand_args(t_shell *shell)
 		i = 0;
 		while (cmd->args[i]) // このコマンドの全引数をループ
 		{
-			expanded = ft_expand_str(cmd->args[i], shell, false); // クォート除去＋$展開を全引数に適用
+			expanded = ft_expand_str(cmd->args[i], shell); // クォート除去＋$展開を全引数に適用
 			free(cmd->args[i]); // 展開前の古い文字列を解放
 			cmd->args[i] = expanded; // 展開後の文字列で上書き
 			i++;
