@@ -1,3 +1,7 @@
 .o
+*.o
+**/*.o
+submission/libft/libft.a
+submission/minishell
 .DS_Store
 prv_memo_hkuninag.md

@@ -7,8 +7,10 @@
 /*
 ** 4. 子プロセスの処理 (pid == 0)
 */
-static void	exec_child(char *path, t_cmd *cmd, char **envp)
+static void	exec_child(char *path, t_cmd *cmd, t_shell *shell)
 {
+	char **current_envp;
+
 	// execve実行の前に fd を付け替える。
 	// execve で起動するコマンドは、ファイルを読み書きするために fd 0番・1番だけを使う。それ以外は見ない。
 	// execve 後は fd を変更できないため、先に付け替えておく必要がある
@@ -17,8 +19,12 @@ static void	exec_child(char *path, t_cmd *cmd, char **envp)
 		free(path);
 		exit(1);
 	}
+
+	// 最新の環境変数リストから配列を生成する
+	current_envp = env_to_envp(shell->env);
+
 	// execveを使って、子プロセスを別のプログラムに生まれ変わらせる
-	if (execve(path, cmd->args, envp) == -1)
+	if (execve(path, cmd->args, current_envp) == -1)
 	{
 		// execveが失敗した場合（通常はここに来ないはずだが、念のため）
 		perror("minishell: execve");
@@ -118,7 +124,7 @@ void    ft_execute(t_shell *shell)
 
 	if (pid == 0){ //4. 子プロセスの処理 (pid == 0)
 		set_signal_for_child(); //OSのデフォルト（強制終了）
-		exec_child(path, cmd, shell->envp);
+		exec_child(path, cmd, shell);
 	}
 	else{  //5. 親プロセスの処理 (pid > 0)
 		set_signal_for_parent_wait(); //シグナル飛んできても無視
