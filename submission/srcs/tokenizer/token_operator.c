@@ -44,8 +44,10 @@ static int	append_redirect_in(t_token **head, char **line)
 	}
 	(*line)++;
 	operator_str = ft_strdup("<");
-    if(operator_str == NULL)
-        return (0);
+	if (operator_str == NULL)
+	{
+		return (0);
+	}
 	return (add_operator_token(head, operator_str, TK_REDIRECT_IN));
 }
 
@@ -63,8 +65,8 @@ static int	append_redirect_out(t_token **head, char **line)
 	}
 	(*line)++;
 	operator_str = ft_strdup(">");
-    if(operator_str == NULL)
-        return (0);
+	if (operator_str == NULL)
+		return (0);
 	return (add_operator_token(head, operator_str, TK_REDIRECT_OUT));
 }
 

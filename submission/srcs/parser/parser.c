@@ -12,7 +12,7 @@ t_cmd *init_cmd_struct(void)
     t_cmd *cmd;
     cmd = malloc(sizeof(t_cmd));
     if (!cmd)
-        return NULL;
+		return NULL;
 
     // ①だとわかりやすい
 	cmd->args = NULL;
@@ -104,16 +104,16 @@ t_cmd	*parse_command(t_token **current)
     // 1. 新しいコマンド構造体を確保
     cmd = init_cmd_struct();
     if(cmd == NULL)
-        return NULL;
+		return NULL;
 
 	// 2. 引数の数を数えて、二次元配列を malloc する
     // \*current を渡すことで、現在の位置からパイプまでの単語数を取得します
 	num_words = count_words(*current);
-    cmd->args = malloc(sizeof(char *) * (num_words + 1)); // +1 は終端の NULL のため
-    if (!cmd->args)
-        return(free_cmd(cmd), NULL);
+	cmd->args = malloc(sizeof(char *) * (num_words + 1)); // +1 は終端の NULL のため
+	if (!cmd->args)
+		return(free_cmd(cmd), NULL);
     // ゼロ初期化
-    ft_memset(cmd->args, 0, sizeof(char *) * (num_words + 1));
+	ft_memset(cmd->args, 0, sizeof(char *) * (num_words + 1));
 
 	// 3. トークンを読み進めながら、配列に単語を詰めていく
 	// パイプ (TK_PIPE) か EOF (TK_EOF) が来るまで、1つのコマンドとして読み続ける
