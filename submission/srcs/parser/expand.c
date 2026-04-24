@@ -6,7 +6,7 @@
 ** クォート状態を追跡しながら走査する。
 ** シングルクォート内 → $ を展開しない
 ** ダブルクォート内  → $ のみ展開する
-** クォート文字自体は result に残す（除去はしない）
+** クォート文字自体は result に追加せず除去する
 */
 static char	*ft_expand_str(char *str, t_shell *shell, bool in_sq)
 {
@@ -42,7 +42,8 @@ static char	*ft_expand_str(char *str, t_shell *shell, bool in_sq)
 }
 
 /*
-** コマンドリスト全体を走査し、各コマンドの args[] を展開する。
+** コマンドリスト全体を走査し、各コマンドの args[] を
+** クォート除去・環境変数展開して上書きする。
 ** 展開前の文字列を free し、展開後の文字列で上書きする。
 **
 ** コマンドリスト：パイプで繋がったコマンドの連結リスト
@@ -61,15 +62,10 @@ void	ft_expand_args(t_shell *shell)
 		i = 0;
 		while (cmd->args[i]) // このコマンドの全引数をループ
 		{
-			if (!ft_strchr(cmd->args[i], '$')) // '$' が無い引数は展開不要なので、そのまま次へ進む
-				i++;
-			else
-			{
-				expanded = ft_expand_str(cmd->args[i], shell, false); // '$' がある引数は展開
-				free(cmd->args[i]); // 展開前の古い文字列を解放
-				cmd->args[i] = expanded; // 展開後の文字列で上書き
-				i++;
-			}
+			expanded = ft_expand_str(cmd->args[i], shell, false); // クォート除去＋$展開を全引数に適用
+			free(cmd->args[i]); // 展開前の古い文字列を解放
+			cmd->args[i] = expanded; // 展開後の文字列で上書き
+			i++;
 		}
 		cmd = cmd->next; // 次のコマンドへ（パイプの右側）
 	}
