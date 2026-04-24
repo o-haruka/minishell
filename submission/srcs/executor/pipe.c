@@ -111,6 +111,7 @@ static void	exec_pipeline_child(int cmd_idx, int cmd_count,
 {
 	char	*path;
 	int		pipe_count;
+	char	**current_envp;
 
 	pipe_count = cmd_count - 1;
 	set_child_stdin(cmd_idx, pipes);
@@ -126,7 +127,8 @@ static void	exec_pipeline_child(int cmd_idx, int cmd_count,
 		ft_putendl_fd(": command not found", STDERR_FILENO);
 		exit(127);
 	}
-	execve(path, cmd->args, shell->envp);
+	current_envp = env_to_envp(shell->env);
+	execve(path, cmd->args, current_envp);
 	perror("minishell: execve"); // execve失敗時（通常ここには来ない）
 	free(path);
 	exit(1);
