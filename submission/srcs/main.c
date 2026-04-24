@@ -98,7 +98,7 @@ int	main(int argc, char **argv, char **envp)
 	// 1. t_shell を初期化する（フィールド順: env, cmds, tokens, last_status, envp）
 	// ※ {.env=NULL, .cmds=NULL, ...} と書くと読みやすいが行が長くなるため省略形を使用
 	// envp を構造体で保持
-	shell = (t_shell){NULL, NULL, NULL, 0, envp};
+	shell = (t_shell){NULL, NULL, NULL, 0};
 
 	//! 環境変数の取得。envpを解析して、扱いやすい連結リスト(t_env)に変換する
 	shell.env = init_env(envp);
