@@ -21,11 +21,12 @@ int	count_cmds(t_cmd *cmd)
 
 /*
 ** pipe_count 本のパイプを全て作る。
-** 1本でも失敗したら -1 を返す。
+** 途中で失敗した場合は、それまでに開いた fd を全て閉じてから -1 を返す。
 */
 int	open_all_pipes(int (*pipes)[2], int pipe_count)
 {
 	int	i;
+	int	j;
 
 	i = 0;
 	while (i < pipe_count)
@@ -33,6 +34,13 @@ int	open_all_pipes(int (*pipes)[2], int pipe_count)
 		if (pipe(pipes[i]) == -1)
 		{
 			perror("minishell: pipe");
+			j = 0;
+			while (j < i) // 開けていたパイプを全て閉じる（fd リーク防止）
+			{
+				close(pipes[j][0]);
+				close(pipes[j][1]);
+				j++;
+			}
 			return (-1);
 		}
 		i++;
@@ -57,6 +65,22 @@ void	close_all_pipes(int (*pipes)[2], int pipe_count)
 		close(pipes[i][1]);
 		i++;
 	}
+}
+
+/*
+** env_to_envp で作った char** 配列を解放する。
+** 各文字列（"KEY=VALUE"）と配列本体を両方 free する。
+*/
+void	free_envp(char **envp)
+{
+	int	i;
+
+	if (!envp)
+		return ;
+	i = 0;
+	while (envp[i])
+		free(envp[i++]);
+	free(envp);
 }
 
 /*
