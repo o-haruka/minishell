@@ -19,12 +19,13 @@ static void exec_child(char *path, t_cmd *cmd, t_shell *shell)
         exit(1);
     }
     current_envp = env_to_envp(shell->env);
-    if (execve(path, cmd->args, current_envp) == -1)
-    {
-        perror("minishell: execve");
-        free(path);
-        exit(1);
-    }
+    if (!current_envp)
+        exit((free(path), 1)); // env_to_envp 失敗。path を解放してから exit
+    execve(path, cmd->args, current_envp); // 成功するとこのプロセスがコマンドに置き換わり、以降の行は実行されない
+    perror("minishell: execve");
+    free_envp(current_envp); // execve 失敗時のみここに到達。配列と各文字列を解放
+    free(path);
+    exit(1);
 }
 
 /*--------------------------------------------

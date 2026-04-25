@@ -168,6 +168,7 @@ int     count_cmds(t_cmd *cmd);
 int     open_all_pipes(int (*pipes)[2], int pipe_count);
 void    close_all_pipes(int (*pipes)[2], int pipe_count);
 void    wait_all_cmds(pid_t *pids, int cmd_count, t_shell *shell);
+void    free_envp(char **envp);
 
 /*----------------------------------------
 builtins

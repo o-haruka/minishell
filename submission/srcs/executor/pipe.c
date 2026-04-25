@@ -110,13 +110,11 @@ static void	exec_pipeline_child(int cmd_idx, int cmd_count,
 				int (*pipes)[2], t_cmd *cmd, t_shell *shell)
 {
 	char	*path;
-	int		pipe_count;
 	char	**current_envp;
 
-	pipe_count = cmd_count - 1;
 	set_child_stdin(cmd_idx, pipes);
 	set_child_stdout(cmd_idx, cmd_count, pipes);
-	close_all_pipes(pipes, pipe_count); // dup2済みなので全fd不要
+	close_all_pipes(pipes, cmd_count - 1); // dup2済みなので全fd不要
 	if (ft_apply_redirs(cmd) == -1)
 		exit(1);
 	path = search_path(cmd->args[0], shell->env);
@@ -128,8 +126,11 @@ static void	exec_pipeline_child(int cmd_idx, int cmd_count,
 		exit(127);
 	}
 	current_envp = env_to_envp(shell->env);
-	execve(path, cmd->args, current_envp);
+	if (!current_envp)
+		exit((free(path), 1)); // path を解放してから exit（カンマ演算子で1行にまとめる）
+	execve(path, cmd->args, current_envp); // 成功するとこのプロセスがコマンドに置き換わり、以降の行は実行されない
 	perror("minishell: execve"); // execve失敗時（通常ここには来ない）
+	free_envp(current_envp); // execve 失敗時のみここに到達。配列と各文字列を解放
 	free(path);
 	exit(1);
 }
