@@ -105,6 +105,7 @@ int ft_cd(t_cmd *cmd, t_shell *shell)
         //TODO ここにエラー処理
         // ft_putendl_fd(old_pwd, STDOUT_FILENO);
         free(old_pwd);
+		return (1);
     }
 
     // 3. chdir・・・自プロセスのカレントディレクトリを引数のpathに変更する
