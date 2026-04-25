@@ -64,55 +64,57 @@ static int	ft_is_valid_key(char *key)
 }
 
 /*
-** 引数1つを解析して env リストに追加・更新する。
+** '=' を含む引数 "KEY=VALUE" を解析して env に登録する。
+** key を ft_substr で切り出し、有効性を確認してから update_env_value を呼ぶ。
 ** 戻り値: 0（成功）/ 1（失敗）
-**
-** 引数のパターン：
-**   "NAME=tanaka" → '=' で分割して key="NAME", value="tanaka" として登録
-**   "NAME"        → value なし（NULL）で key だけ登録
-**   "=VALUE"      → key が空 → 不正な識別子としてエラー
-**   "1NAME=x"     → key が数字始まり → 不正な識別子としてエラー
+*/
+static int	ft_export_with_eq(t_shell *shell, char *arg, char *eq)
+{
+	char	*key;
+	char	*value;
+
+	key = ft_substr(arg, 0, eq - arg);
+	value = eq + 1;
+	if (!key)
+		return (1);
+	if (!ft_is_valid_key(key))
+	{
+		ft_putstr_fd("minishell: export: `", STDERR_FILENO);
+		ft_putstr_fd(arg, STDERR_FILENO);
+		ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
+		free(key);
+		return (1);
+	}
+	if (update_env_value(&shell->env, key, value) != 0)
+	{
+		ft_putendl_fd("minishell: export: malloc failed", STDERR_FILENO);
+		free(key);
+		return (1);
+	}
+	free(key);
+	return (0);
+}
+
+/*
+** 引数1つを解析して env リストに追加・更新する。
+** '=' なし → key だけ登録、'=' あり → ft_export_with_eq に委譲する。
+** 戻り値: 0（成功）/ 1（失敗）
 */
 static int	ft_export_var(t_shell *shell, char *arg)
 {
 	char	*eq;
-	char	*key;
-	char	*value;
 
-	eq = ft_strchr(arg, '='); // '=' の位置を探す（なければ NULL）
-	if (eq == NULL) // '=' がない → key だけ登録するケース
-	{
-		if (!ft_is_valid_key(arg)) // key として不正な場合はエラー
-		{
-			ft_putstr_fd("minishell: export: `", STDERR_FILENO);
-			ft_putstr_fd(arg, STDERR_FILENO);
-			ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
-			return (1); // 不正な識別子 → 失敗
-		}
-		// key だけ登録（value は NULL）、update_env_value の結果をそのまま返す
-		return (update_env_value(&shell->env, arg, NULL));
-	}
-	key = ft_substr(arg, 0, eq - arg); // '=' より前を key として切り出す
-	value = eq + 1; 				   // '=' より後ろを value として取得
-	if (!key)
-		return (1); // ft_substr の malloc 失敗
-	if (!ft_is_valid_key(key)) // key が不正な識別子の場合はエラー
+	eq = ft_strchr(arg, '=');
+	if (eq != NULL)
+		return (ft_export_with_eq(shell, arg, eq));
+	if (!ft_is_valid_key(arg))
 	{
 		ft_putstr_fd("minishell: export: `", STDERR_FILENO);
-		ft_putstr_fd(arg, STDERR_FILENO); // 引数全体（例: "=VALUE"）を表示
+		ft_putstr_fd(arg, STDERR_FILENO);
 		ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
-		free(key); // ft_substr で malloc されたので free する
-		return (1); // 不正な識別子 → 失敗
+		return (1);
 	}
-	if (update_env_value(&shell->env, key, value) != 0) // env リストの更新。失敗チェック
-	{
-		// update_env_value が 1 を返した = malloc 失敗
-		ft_putendl_fd("minishell: export: malloc failed", STDERR_FILENO);
-		free(key);
-		return (1); // malloc 失敗
-	}
-	free(key); // ft_substr で malloc されたので free する
-	return (0); // 成功
+	return (update_env_value(&shell->env, arg, NULL));
 }
 
 /*
