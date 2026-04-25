@@ -4,7 +4,6 @@
 /*
 ** "KEY=VALUE" 形式の文字列から t_env を1つ作って返す。
 ** key と value はそれぞれ ft_strdup でコピーして保持する。
-** malloc に失敗した場合は NULL を返す。
 */
 static t_env	*ft_new_env(char *entry)
 {
@@ -15,8 +14,13 @@ static t_env	*ft_new_env(char *entry)
 	if (!node)
 		return (NULL);
 	eq = ft_strchr(entry, '='); // '=' の位置を探す
-	node->key = ft_substr(entry, 0, eq - entry); // '=' より前を key に
-	node->value = ft_strdup(eq + 1); // '=' より後ろを value に
+	if (!eq)
+	{
+		free(node);
+		return (NULL);
+	}
+	node->key = ft_substr(entry, 0, eq - entry); // eq - entry で '=' の前の文字数を求める
+	node->value = ft_strdup(eq + 1); // eq + 1 で '=' の1つ後ろ（value の先頭）を指す
 	node->next = NULL;
 	if (!node->key || !node->value)
 	{
@@ -42,7 +46,7 @@ t_env	*init_env(char **envp)
 	int		i;
 
 	head = NULL;
-	tail = NULL;
+	tail = NULL; // tail を持つことで、末尾追加を O(1) で行える（毎回リストを辿らなくて済む）
 	i = 0;
 	while (envp[i])
 	{
@@ -55,8 +59,8 @@ t_env	*init_env(char **envp)
 		if (!head)
 			head = node; // 最初のノードをリストの先頭に設定
 		else
-			tail->next = node; // 末尾に連結
-		tail = node;
+			tail->next = node; // tail が常に末尾を指しているので直接連結できる
+		tail = node; // tail を新しい末尾に更新
 		i++;
 	}
 	return (head);
