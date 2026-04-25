@@ -130,7 +130,15 @@ void    ft_execute(t_shell *shell)
     }
     if (is_builtin(cmd->args[0]))
     {
+        int saved_stdout = dup(STDOUT_FILENO);
+        int saved_stdin = dup(STDIN_FILENO);
+        if (ft_apply_redirs(cmd) == -1)
+            return;
         shell->last_status = exec_builtin(cmd, shell);
+        dup2(saved_stdout, STDOUT_FILENO);
+        dup2(saved_stdin, STDIN_FILENO);
+        close(saved_stdout);
+        close(saved_stdin);
         return ;
     }
     execute_external(cmd, shell);
