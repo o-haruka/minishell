@@ -110,5 +110,5 @@ int	main(int argc, char **argv, char **envp)
 	minishell_loop(&shell);
 	// 4. 終了前の全体メモリ解放
 	// free_all_data(env_list);
-	return (0);
+	return (shell.last_status);
 }
