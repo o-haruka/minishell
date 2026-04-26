@@ -112,7 +112,10 @@ int ft_cd(t_cmd *cmd, t_shell *shell)
     if (chdir(path) != 0)
     {
         // 失敗した場合（例: ディレクトリがない、権限がない）
-        perror("minishell: cd");
+		ft_putstr_fd("minishell: cd: ", STDERR_FILENO);
+		ft_putstr_fd(path, STDERR_FILENO);          // パス名を挿入
+		ft_putstr_fd(": ", STDERR_FILENO);
+		ft_putendl_fd(strerror(errno), STDERR_FILENO); // エラー内容
         free(old_pwd); // 失敗した時は old_pwd を忘れずに free して終わる
         return (1);
     }

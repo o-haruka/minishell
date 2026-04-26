@@ -30,8 +30,9 @@ static void	ft_do_exit(t_shell *shell, int code)
 */
 int	ft_exit(t_cmd *cmd, t_shell *shell)
 {
-	// bash と同様に、exit コマンドが実行されたことを表示する
-	ft_putendl_fd("exit", STDOUT_FILENO);
+    // 対話モード時のみ "exit" を表示（bashの挙動に合わせる）
+    if (isatty(STDIN_FILENO))
+		ft_putendl_fd("exit", STDERR_FILENO);  // stdoutではなくstderr
 	if (!cmd->args[1]) // 引数なし → last_status の値で終了
 		ft_do_exit(shell, shell->last_status);
 	if (cmd->args[2]) // args[2] が存在する = 引数が2つ以上
@@ -47,8 +48,8 @@ int	ft_exit(t_cmd *cmd, t_shell *shell)
 		ft_putstr_fd("minishell: exit: ", STDERR_FILENO);
 		ft_putstr_fd(cmd->args[1], STDERR_FILENO); // 問題の引数を表示
 		ft_putendl_fd(": numeric argument required", STDERR_FILENO);
-		shell->last_status = 255; // bash の仕様： 数値でない場合は 255 をセット
-		return (255); // exit() せずに return → シェルは続く
+		shell->last_status = 2; // bash の仕様： 数値でない場合は 2 をセット
+		return (2); // exit() せずに return → シェルは続く
 	}
 	// 数値引数を int に変換して終了
 	ft_do_exit(shell, ft_atoi(cmd->args[1]));
