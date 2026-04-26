@@ -1,6 +1,7 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 # include "libft.h"
+# include "../stdio/get_next_line/get_next_line.h"
 
 // 標準Cヘッダ
 # include <stdio.h>
@@ -18,6 +19,8 @@
 // 外部ライブラリ
 # include <readline/history.h>
 # include <readline/readline.h>
+
+
 
 # define CHECK "\033[32m[✔]\033[0m"
 # define CROSS "\033[31m[✘]\033[0m"
@@ -56,7 +59,7 @@ typedef struct s_token
 // リダイレクト情報（単方向リスト）
 typedef struct s_redir
 {
-	t_token_kind kind;       // TK_REDIRECT_IN / TK_REDIRECT_OUT / TK_APPEND / TK_HEREDOC 
+	t_token_kind kind;       // TK_REDIRECT_IN / TK_REDIRECT_OUT / TK_APPEND / TK_HEREDOC
     char *file; // ファイル名 or heredoc の区切り文字
 	struct s_redir	*next;
 }					t_redir;
