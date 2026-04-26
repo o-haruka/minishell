@@ -12,14 +12,22 @@ void	minishell_loop(t_shell *shell)
 	while (1)
 	{
 		g_signal = 0; // シグナルステータスをリセット
-		line = readline(GREEN "minishell> " RESET);
+		if (isatty(STDIN_FILENO))
+			// isatty(fd) は「そのファイルディスクリプタがターミナル（人間が操作している端末）に繋がっているか？」を確認する関数
+			line = readline(GREEN "minishell> " RESET); // 対話モード: プロンプトあり
+		else
+			line = get_next_line(STDIN_FILENO); // パイプ入力時: プロンプトなし
 		// TODO free必須(readlineはmallocする)
 		if (line == NULL)
 		{
-			// TODO 本家ではここに(break前に)printf("exit\n");が入るらしい
-			ft_putendl_fd("exit", STDOUT_FILENO);
+			if (isatty(STDIN_FILENO))
+				// TODO 本家ではここに(break前に)printf("exit\n");が入るらしい
+				ft_putendl_fd("exit", STDOUT_FILENO);
 			break ;
 		}
+		// get_next_lineは末尾に\nが付くので除去
+		if (!isatty(STDIN_FILENO))
+			line[ft_strlen(line) - 1] = '\0'; // \n → \0
 		// シグナルが発生した場合は継続
 		if (g_signal == SIGINT)
 		{
@@ -66,7 +74,14 @@ void	minishell_loop(t_shell *shell)
 		//★-----------------------------------★
 		ft_expand_args(shell);
 		//★-----------------------------------★
-		// 5. 実行 (Executor) コマンドを実行
+		// 5. 実行 (Executor) コマンドを実srcs/main.c:22:11: error: implicit declaration of function 'get_next_line' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+                        line = get_next_line(STDIN_FILENO); // パイプ入力時: プロンプトなし
+                               ^
+srcs/main.c:22:9: error: incompatible integer to pointer conversion assigning to 'char *' from 'int' [-Werror,-Wint-conversion]
+                        line = get_next_line(STDIN_FILENO); // パイプ入力時: プロンプトなし
+                             ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2 errors generated.
+make: *** [Makefile:87: objs/main.o] Error 1行
 		//★-----------------------------------★
 		if (shell->cmds)
 			ft_execute(shell);
