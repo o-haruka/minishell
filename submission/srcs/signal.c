@@ -1,8 +1,4 @@
 #include "minishell.h"
-#include <readline/history.h>
-#include <readline/readline.h>
-#include <stdio.h>
-#include <unistd.h>
 
 int		g_signal = 0;
 

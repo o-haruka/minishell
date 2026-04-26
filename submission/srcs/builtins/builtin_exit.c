@@ -1,7 +1,6 @@
 /*hkuninag担当*/
 
 #include "minishell.h"
-#include "libft.h"
 
 /*
 ** 動的確保したメモリを解放してから exit() を呼ぶ。

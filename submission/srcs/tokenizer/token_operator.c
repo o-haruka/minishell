@@ -1,5 +1,4 @@
 #include "minishell.h"
-#include "libft.h"
 
 // malloc失敗時は 0 を返し、成功時は 1 を返す
 // 新しいノードを作ってリストに繋ぐ

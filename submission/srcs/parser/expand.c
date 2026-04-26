@@ -1,5 +1,4 @@
 #include "minishell.h"
-#include "libft.h"
 
 /* ── 処理の流れ（上が入口、下が詳細） ────────────────────────
 **   ft_expand_args          コマンドリスト全体のエントリポイント

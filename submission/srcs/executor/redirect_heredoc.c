@@ -1,6 +1,4 @@
 #include "minishell.h"
-#include "libft.h"
-#include <readline/readline.h>
 #include <sys/wait.h>
 
 

@@ -1,4 +1,3 @@
-#include "libft.h"
 #include "minishell.h"
 
 #define REDIR_OK      1   // 正常終了

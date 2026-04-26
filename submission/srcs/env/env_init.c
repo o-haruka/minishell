@@ -1,5 +1,4 @@
 #include "minishell.h"
-#include "libft.h"
 
 /*
 ** "KEY=VALUE" 形式の文字列から t_env を1つ作って返す。

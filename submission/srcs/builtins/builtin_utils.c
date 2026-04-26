@@ -1,5 +1,4 @@
 #include "minishell.h"
-#include "libft.h"
 
 // ビルトインコマンドかどうかを判定する (1: ビルトイン, 0: 外部コマンド)
 int is_builtin(char *cmd)

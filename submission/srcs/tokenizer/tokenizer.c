@@ -1,5 +1,4 @@
 #include "minishell.h"
-#include "libft.h"
 
 // 1. ループで文字を読み進め、トークンリストを構築する
 static int	process_tokens(t_token **head, char **line)

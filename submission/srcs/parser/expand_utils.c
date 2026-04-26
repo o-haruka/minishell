@@ -1,5 +1,4 @@
 #include "minishell.h"
-#include "libft.h"
 
 /*
 ** t_env リストを走査し、key が完全一致する value を返す。

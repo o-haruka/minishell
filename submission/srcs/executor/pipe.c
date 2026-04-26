@@ -63,7 +63,6 @@
 */
 
 #include "minishell.h"
-#include "libft.h"
 #include <sys/wait.h>
 
 /*

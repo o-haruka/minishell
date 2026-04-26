@@ -1,6 +1,5 @@
 /*hkuninag担当*/
 #include "minishell.h"
-#include "libft.h"
 
 /*
 ** 全環境変数を "declare -x KEY="VALUE"" 形式で表示する。

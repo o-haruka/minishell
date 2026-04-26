@@ -1,7 +1,6 @@
 /*hkuninag担当*/
 
 #include "minishell.h"
-#include "libft.h"
 
 /*
 ** env リストから key が一致するノードを1つ削除する。

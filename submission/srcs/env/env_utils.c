@@ -1,5 +1,4 @@
 #include "minishell.h"
-#include "libft.h"
 
 /*
 ** t_env リスト全体を解放する。

@@ -1,5 +1,4 @@
 #include "minishell.h"
-#include "libft.h"
 
 // 「コマンドの引数（args）を正しく解析する」
 // `-n` オプション　改行を消す

@@ -1,5 +1,4 @@
 #include "minishell.h"
-#include "libft.h"
 #include <unistd.h>
 
 /*-----テスト-----

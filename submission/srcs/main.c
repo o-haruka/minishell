@@ -1,7 +1,4 @@
-#include "libft.h"
 #include "minishell.h"
-#include <readline/history.h>
-#include <readline/readline.h>
 
 /*
 ** ループ処理を行う関数
