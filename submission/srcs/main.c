@@ -74,14 +74,7 @@ void	minishell_loop(t_shell *shell)
 		//★-----------------------------------★
 		ft_expand_args(shell);
 		//★-----------------------------------★
-		// 5. 実行 (Executor) コマンドを実srcs/main.c:22:11: error: implicit declaration of function 'get_next_line' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-                        line = get_next_line(STDIN_FILENO); // パイプ入力時: プロンプトなし
-                               ^
-srcs/main.c:22:9: error: incompatible integer to pointer conversion assigning to 'char *' from 'int' [-Werror,-Wint-conversion]
-                        line = get_next_line(STDIN_FILENO); // パイプ入力時: プロンプトなし
-                             ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-2 errors generated.
-make: *** [Makefile:87: objs/main.o] Error 1行
+		// 5. 実行 (Executor) コマンドを実行
 		//★-----------------------------------★
 		if (shell->cmds)
 			ft_execute(shell);

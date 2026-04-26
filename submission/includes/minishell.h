@@ -1,17 +1,23 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 # include "libft.h"
-# include <readline/history.h>
-# include <readline/readline.h>
-# include <signal.h>
-# include <stdbool.h>
+
+// 標準Cヘッダ
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
+# include <stdbool.h>
+
+// UNIX系標準ヘッダ
+# include <unistd.h>
 # include <sys/types.h>
 # include <sys/wait.h>
-# include <unistd.h>
 # include <termios.h>
+# include <signal.h>
+
+// 外部ライブラリ
+# include <readline/history.h>
+# include <readline/readline.h>
 
 # define CHECK "\033[32m[✔]\033[0m"
 # define CROSS "\033[31m[✘]\033[0m"
