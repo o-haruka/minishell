@@ -11,6 +11,7 @@
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <unistd.h>
+#include <termios.h>
 
 # define CHECK "\033[32m[✔]\033[0m"
 # define CROSS "\033[31m[✘]\033[0m"
