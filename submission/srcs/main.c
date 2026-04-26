@@ -12,11 +12,17 @@ void	minishell_loop(t_shell *shell)
 	while (1)
 	{
 		g_signal = 0; // シグナルステータスをリセット
+		// ★★ 1. readlineで待機する直前にエコーをオフにする
+        disable_echoctl();
 		if (isatty(STDIN_FILENO))
 			// isatty(fd) は「そのファイルディスクリプタがターミナル（人間が操作している端末）に繋がっているか？」を確認する関数
 			line = readline(GREEN "minishell> " RESET); // 対話モード: プロンプトあり
 		else
 			line = get_next_line(STDIN_FILENO); // パイプ入力時: プロンプトなし
+
+		// ★★ 2. 入力が終わったら即座にエコー設定を元に戻す
+        // これにより、この後の ft_execute で実行される外部コマンドでは ^C が表示されるようになります
+        restore_echoctl();
 		// TODO free必須(readlineはmallocする)
 		if (line == NULL)
 		{
