@@ -41,6 +41,7 @@ SRCS        = main.c \
               builtins/builtin_unset.c \
               builtins/builtin_exit.c \
               terminal.c \
+              utils.c \
               debug.c \
 
 # SRCSの拡張子 .c を .o に置換し、OBJ_PATH を前につける

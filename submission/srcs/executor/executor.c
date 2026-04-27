@@ -29,7 +29,8 @@ static void exec_child(char *path, t_cmd *cmd, t_shell *shell)
         status = 127;
     else if (errno == EACCES || errno == EISDIR)
         status = 126;
-    perror("minishell: execve");
+    // perror("minishell: execve");
+    print_error_msg(NULL, cmd->args[0], strerror(errno));
     free_envp(current_envp); // execve 失敗時のみここに到達。配列と各文字列を解放
     free(path);
     exit(status);

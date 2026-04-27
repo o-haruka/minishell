@@ -94,6 +94,11 @@ typedef struct s_shell
 Prototypes
 ************************************/
 /*----------------------------------------
+common util(utils.c)
+----------------------------------------*/
+void print_error_msg(char *cmd_name, char *target, char *error_msg);
+
+/*----------------------------------------
 terminal(terminal.c)
 ----------------------------------------*/
 void disable_echoctl(void);

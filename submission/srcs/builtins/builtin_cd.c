@@ -26,13 +26,13 @@ static char *get_cd_path(t_cmd *cmd, t_shell *shell)
         // case1: unset HOMEしたときpath == NULLになるのでエラー処理が必要。
         // case2: $ env -i ./minishell (環境変数をすべて空っぽにして起動)
         if (path == NULL)
-            ft_putendl_fd("minishell: cd: HOME not set", STDERR_FILENO);
+            print_error_msg("cd", NULL, "HOME not set");
         return (path);
     }
     else if (cmd->args[2] != NULL)
     {
         // 本家の仕様：引数が2つ以上あるとエラーになる
-        ft_putendl_fd("minishell: cd: too many arguments", STDERR_FILENO);
+        print_error_msg("cd", NULL, "too many arguments");
         return (NULL);
     }
     // 引数が1つの場合 (例: `cd /tmp`) は、その引数をパスにする
@@ -104,7 +104,7 @@ int ft_cd(t_cmd *cmd, t_shell *shell)
         //TODO ここにエラー処理
         // ft_putendl_fd(old_pwd, STDOUT_FILENO);
         free(old_pwd);
-		return (1);
+		// return (1);
     }
 
     // 3. chdir・・・自プロセスのカレントディレクトリを引数のpathに変更する
@@ -112,10 +112,7 @@ int ft_cd(t_cmd *cmd, t_shell *shell)
     if (chdir(path) != 0)
     {
         // 失敗した場合（例: ディレクトリがない、権限がない）
-		ft_putstr_fd("minishell: cd: ", STDERR_FILENO);
-		ft_putstr_fd(path, STDERR_FILENO);          // パス名を挿入
-		ft_putstr_fd(": ", STDERR_FILENO);
-		ft_putendl_fd(strerror(errno), STDERR_FILENO); // エラー内容
+		print_error_msg("cd", path, strerror(errno));
         free(old_pwd); // 失敗した時は old_pwd を忘れずに free して終わる
         return (1);
     }
