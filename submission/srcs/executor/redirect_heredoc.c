@@ -83,10 +83,7 @@ static int  wait_heredoc_parent(pid_t pid, int *pipefd)
 		
 		write(STDERR_FILENO, "\n", 1); // 親プロセスはここで改行を出力し、
 		close(pipefd[0]); // パイプも不要になったので閉じて、
-		// 変更前： return (-1);
-		// 変更後： エラーを返すのではなく、自分（第2層）も 130 で死ぬ！
-		// これにより、親（第1層）に確実に 130 が伝わる。
-		exit(130);
+		return (-1);
 	}
 	// 5. 無事に終わった場合（Ctrl-Cされてない場合）、パイプを stdin に繋ぐ
 	if (dup2(pipefd[0], STDIN_FILENO) == -1) // 読み込み端を stdin に付け替え
