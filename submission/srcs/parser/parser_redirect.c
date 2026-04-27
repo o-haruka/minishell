@@ -4,7 +4,7 @@
 #define REDIR_ERR     0   // メモリ確保などの通常エラー
 #define REDIR_SYNTAX -1   // 構文エラー
 
-// --------------------------------------------------------- 
+// ---------------------------------------------------------
 // 2. リダイレクト構造体(t_redir)の初期化関数
 // ---------------------------------------------------------
 static t_redir	*init_redir_struct(void)
@@ -14,7 +14,7 @@ static t_redir	*init_redir_struct(void)
 	redir = malloc(sizeof(t_redir));
 	if (!redir)
 		return (NULL);
-    *redir = (t_redir){0, NULL, NULL}; //初期化
+    *redir = (t_redir){0, NULL, -1, NULL}; //初期化
 	return (redir);
 }
 
@@ -41,7 +41,7 @@ static void	add_redir_to_list(t_cmd *cmd, t_redir *new_redir)
 // 1. リダイレクトトークンを解析し、リストに追加する関数
 // ---------------------------------------------------------
 int handle_redirection(t_cmd *cmd, t_token **current){
-	
+
     t_redir	*new_redir;
 
     // 1. リダイレクト構造体の作成(初期化関数)
