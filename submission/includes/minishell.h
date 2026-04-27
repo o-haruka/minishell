@@ -127,6 +127,9 @@ bool				is_metachar(char c);
 void				consume_space(char **line);
 int					has_unclosed_quote(char *line);
 
+// tokenizer_syntax.c
+int					ft_check_syntax(t_token *tokens);
+
 // token_operator.c
 int					append_operator(t_token **head, char **line);
 int					append_word(t_token **head, char **line);
@@ -140,9 +143,6 @@ t_cmd				*parse(t_token *tokens);
 // parser_utils.c
 void				free_cmd(t_cmd *cmd);
 void				free_cmds_list(t_cmd *cmd);
-
-// parser_syntax.c
-int					ft_check_syntax(t_token *tokens);
 
 // parser_redirection.c
 int					handle_redirection(t_cmd *cmd, t_token **current);

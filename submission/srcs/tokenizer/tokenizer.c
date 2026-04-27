@@ -64,5 +64,13 @@ t_token *tokenize(char *line)
 		return (NULL);
 	}
 	// 4. 最後にEOFトークンを追加しておくと便利
-	return (append_eof(&head));
+	if (append_eof(&head) == NULL)
+		return (NULL);
+	/* 構文チェック：パイプ・リダイレクトの配置を検証 */
+    if (ft_check_syntax(head) == -1)
+    {
+        token_free(&head);
+        return (NULL);
+    }
+    return (head);
 }

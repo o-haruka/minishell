@@ -54,6 +54,8 @@ void	minishell_loop(t_shell *shell)
 		shell->tokens = tokenize(line);
 		if (shell->tokens == NULL)
 		{
+			/* 構文エラーの場合は $? を 2 に設定する (bash 互換) */
+			shell->last_status = 2;
 			free(line);
 			// TODO 必要に応じてエラーメッセージを表示
 			// ft_putendl_fd("lexer error", 2);
@@ -67,8 +69,6 @@ void	minishell_loop(t_shell *shell)
 		shell->cmds = parse(shell->tokens);
 		if (shell->cmds == NULL)
 		{
-			/* 構文エラーの場合は $? を 2 に設定する (bash 互換) */
-			shell->last_status = 2;
 			token_free(&(shell->tokens));
 			free(line);
 			// TODO 必要ならエラーメッセージ

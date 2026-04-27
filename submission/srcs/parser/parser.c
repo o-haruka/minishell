@@ -132,11 +132,8 @@ t_cmd *parse(t_token *tokens)
     t_cmd *cmd_tail = NULL;
     t_cmd *new_cmd = NULL;
     t_token *current_token; // 読み進めるための「現在地ポインタ」を別に用意する
-	/* 構文チェック：パイプ・リダイレクトの配置を検証 */
-    if (ft_check_syntax(tokens) == -1)
-		return (NULL); /* エラーメッセージは ft_check_syntax 内で出力済み */
-    current_token = tokens; // 現在地ポインタを先頭にセット
 
+    current_token = tokens; // 現在地ポインタを先頭にセット
     // 構築ループ (EOF に到達するまで全体のパースを続ける)
     while (current_token != NULL && current_token->kind != TK_EOF)
     {
