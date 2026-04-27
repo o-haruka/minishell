@@ -64,6 +64,7 @@
 
 #include "minishell.h"
 #include <sys/wait.h>
+#include <errno.h>
 
 /*
 ** 子プロセスの stdin を付け替える。
@@ -110,6 +111,7 @@ static void	exec_pipeline_child(int cmd_idx, int cmd_count,
 {
 	char	*path;
 	char	**current_envp;
+	int		status;
 
 	set_child_stdin(cmd_idx, pipes);
 	set_child_stdout(cmd_idx, cmd_count, pipes);
@@ -128,10 +130,16 @@ static void	exec_pipeline_child(int cmd_idx, int cmd_count,
 	if (!current_envp)
 		exit((free(path), 1)); // path を解放してから exit（カンマ演算子で1行にまとめる）
 	execve(path, cmd->args, current_envp); // 成功するとこのプロセスがコマンドに置き換わり、以降の行は実行されない
+	// ここに到達したということは execve が失敗している
+    status = 1;
+    if (errno == ENOENT)
+        status = 127;
+    else if (errno == EACCES || errno == EISDIR)
+        status = 126;
 	perror("minishell: execve"); // execve失敗時（通常ここには来ない）
 	free_envp(current_envp); // execve 失敗時のみここに到達。配列と各文字列を解放
 	free(path);
-	exit(1);
+	exit(status);
 }
 
 /*

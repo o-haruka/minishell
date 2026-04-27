@@ -1,5 +1,6 @@
 #include "minishell.h"
 #include <sys/wait.h>
+#include <errno.h>
 
 /*--------------------------------------------
 ** 1. 子プロセスの処理 (pid == 0)
@@ -11,6 +12,7 @@
 static void exec_child(char *path, t_cmd *cmd, t_shell *shell)
 {
     char    **current_envp;
+    int     status;
 
     if (ft_apply_redirs(cmd) == -1)
     {
@@ -21,10 +23,16 @@ static void exec_child(char *path, t_cmd *cmd, t_shell *shell)
     if (!current_envp)
         exit((free(path), 1)); // env_to_envp 失敗。path を解放してから exit
     execve(path, cmd->args, current_envp); // 成功するとこのプロセスがコマンドに置き換わり、以降の行は実行されない
+    // ここに到達したということは execve が失敗している
+    status = 1;
+    if (errno == ENOENT)
+        status = 127;
+    else if (errno == EACCES || errno == EISDIR)
+        status = 126;
     perror("minishell: execve");
     free_envp(current_envp); // execve 失敗時のみここに到達。配列と各文字列を解放
     free(path);
-    exit(1);
+    exit(status);
 }
 
 /*--------------------------------------------
@@ -129,10 +137,19 @@ void    ft_execute(t_shell *shell)
     }
     if (is_builtin(cmd->args[0]))
     {
-        int saved_stdout = dup(STDOUT_FILENO);
-        int saved_stdin = dup(STDIN_FILENO);
+        int saved_stdout;
+        int saved_stdin;
+        saved_stdout = dup(STDOUT_FILENO);
+        saved_stdin = dup(STDIN_FILENO);
         if (ft_apply_redirs(cmd) == -1)
-            return;
+        {
+            dup2(saved_stdout, STDOUT_FILENO);
+            dup2(saved_stdin, STDIN_FILENO);
+            close(saved_stdout);
+            close(saved_stdin);
+            shell->last_status = 130; // Ctrl+Cの中断ステータス
+            return ; // exitせずにreturnで生還する
+        }
         shell->last_status = exec_builtin(cmd, shell);
         dup2(saved_stdout, STDOUT_FILENO);
         dup2(saved_stdin, STDIN_FILENO);
