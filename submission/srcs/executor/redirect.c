@@ -59,19 +59,32 @@ static int	open_redir_fd(t_redir *redir, int *target_fd)
     return (REDIR_OPEN_SKIP); // 対象外の kind
 }
 
-/*
-** リダイレクト (redirs リスト) 1件分を処理する。
-** HEREDOC は apply_heredoc() で処理し、
-** それ以外は open → dup2 で stdin/stdout を付け替え → close の流れで処理する。
-** 成功: 0, 失敗: -1 を返す。
-*/
+/* heredoc のリダイレクト処理をまとめた関数 */
+static int  apply_heredoc_redir(t_redir *redir)
+{
+    if (redir->fd != -1)
+    {
+        if (dup2(redir->fd, STDIN_FILENO) == -1)
+            return (-1);
+        close(redir->fd);
+        return (0);
+    }
+    redir->fd = apply_heredoc(redir->file);
+    if (redir->fd == -1)
+        return (-1);
+    if (dup2(redir->fd, STDIN_FILENO) == -1)
+        return (-1);
+    close(redir->fd);
+    return (0);
+}
+
 static int	apply_one_redir(t_redir *redir)
 {
 	int	fd;
 	int	target_fd;
 
 	if (redir->kind == TK_HEREDOC)
-    	return (apply_heredoc(redir->file)); // file にデリミタが入っている
+    	return (apply_heredoc_redir(redir));
 	target_fd = -1; // open_redir_fd 内で 0 or 1 に上書きされる
 	fd = open_redir_fd(redir, &target_fd); // ファイルを開き、fd番号を受け取る。target_fd も 0 or 1 に上書きされる
     if (fd == REDIR_OPEN_SKIP) // 対象外の kind はスキップ

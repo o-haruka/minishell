@@ -55,13 +55,13 @@ static void exec_heredoc_child(int *pipefd, char *delimiter)
 {
     // 1. ここは Heredoc 専用の空間。Ctrl-C で死ぬようにデフォルトに戻す！
 	set_signal_for_child();
-	
+
 	// 2. 子プロセスはパイプの出口(0)は使わないので閉じる
 	close(pipefd[0]);
 
 	// 3. 実際の読み込み作業を子プロセスにやらせる
 	read_heredoc_input(pipefd[1], delimiter); // デリミタまでの入力を書き込む
-	
+
 	// 4. 書き終わったら出口を閉じて、正常に(0で)生涯を終える
 	close(pipefd[1]); // 書き終わり、書き込み端を閉じる
 	exit(0);
@@ -80,20 +80,12 @@ static int  wait_heredoc_parent(pid_t pid, int *pipefd)
 	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
 	{
 		// 子プロセスが Ctrl-C で死んだ場合！
-		
+
 		write(STDERR_FILENO, "\n", 1); // 親プロセスはここで改行を出力し、
 		close(pipefd[0]); // パイプも不要になったので閉じて、
 		return (-1);
 	}
-	// 5. 無事に終わった場合（Ctrl-Cされてない場合）、パイプを stdin に繋ぐ
-	if (dup2(pipefd[0], STDIN_FILENO) == -1) // 読み込み端を stdin に付け替え
-	{
-		perror("dup2");
-		close(pipefd[0]);
-		return (-1);
-	}
-	close(pipefd[0]);
-	return (0);
+	return (pipefd[0]);
 }
 
 /*
@@ -126,7 +118,34 @@ int	apply_heredoc(char *delimiter)
 
 	if (pid == 0) // === 【子プロセスの仕事】 ===
         exec_heredoc_child(pipefd, delimiter);
-    
+
     // === 【親プロセスの仕事】 ===
     return wait_heredoc_parent(pid, pipefd);
+}
+
+/*
+** fork前に全コマンドの heredoc を処理して
+** t_redir->fd に読み込み端の fd を保存する。
+** 成功: 0, 失敗: -1
+*/
+int	prepare_heredocs(t_cmd *cmd)
+{
+	t_redir	*redir;
+
+	while (cmd)
+	{
+		redir = cmd->redirs;
+		while (redir)
+		{
+			if (redir->kind == TK_HEREDOC)
+			{
+				redir->fd = apply_heredoc(redir->file);
+				if (redir->fd == -1)
+					return (-1);
+			}
+			redir = redir->next;
+		}
+		cmd = cmd->next;
+	}
+	return (0);
 }

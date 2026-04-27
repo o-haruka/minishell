@@ -61,6 +61,7 @@ typedef struct s_redir
 {
 	t_token_kind kind;       // TK_REDIRECT_IN / TK_REDIRECT_OUT / TK_APPEND / TK_HEREDOC
     char *file; // ファイル名 or heredoc の区切り文字
+	int	fd;         /* heredoc 事前処理済みの fd (-1 = 未処理) */
 	struct s_redir	*next;
 }					t_redir;
 
@@ -182,6 +183,7 @@ int					ft_apply_redirs(t_cmd *cmd);
 
 // redirect_heredoc.c
 int					apply_heredoc(char *delimiter);
+int					prepare_heredocs(t_cmd *cmd);
 
 // executor/pipe.c
 void				ft_execute_pipeline(t_shell *shell);

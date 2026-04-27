@@ -202,6 +202,13 @@ void	ft_execute_pipeline(t_shell *shell)
 		free(pids);
 		return ;
 	}
+	if (prepare_heredocs(shell->cmds) == -1)
+	{
+		close_all_pipes(pipes, pipe_count);
+		free(pipes);
+		free(pids);
+		return ;
+	}
 	if (fork_all_cmds(shell, cmd_count, pipes, pids) == -1) // ② fork
 	{
 		close_all_pipes(pipes, pipe_count);
