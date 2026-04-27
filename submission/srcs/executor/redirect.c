@@ -91,7 +91,7 @@ static int	apply_one_redir(t_redir *redir)
 		return (0);
     if (fd == REDIR_OPEN_ERROR)
 	{
-		perror(redir->file); // open 失敗 → ファイル名付きエラー出力
+        print_error_msg(NULL, redir->file, strerror(errno));
 		return (-1);
 	}
 	if (dup2(fd, target_fd) == -1) // fd の接続先を target_fd (0番 or 1番) にコピーする
