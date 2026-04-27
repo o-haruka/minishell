@@ -26,6 +26,7 @@ SRCS        = main.c \
               parser/parser.c \
               parser/parser_utils.c \
               parser/parser_redirect.c \
+			  parser/parser_syntax.c \
 			  parser/expand.c \
 			  parser/expand_utils.c \
 			  env/env_init.c \
