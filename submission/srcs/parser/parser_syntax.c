@@ -1,7 +1,5 @@
 #include "minishell.h"
 
-#include "minishell.h"
-
 /*
 ** 構文エラー時にエラーメッセージを出力して -1 を返すヘルパー。
 ** token が NULL か TK_EOF の場合は "newline" を、
