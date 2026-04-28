@@ -93,7 +93,7 @@ char *search_path(char *cmd, t_env *env)
 	// 例: "./minishell", "/bin/ls" などの場合はPATHを探さずに直接チェックする
 	if (ft_strchr(cmd, '/'))
 	{
-		if (access(cmd, F_OK | X_OK) == 0) // F_OK: 存在確認, X_OK: 実行権限確認
+		if (access(cmd, F_OK) == 0) // F_OK: 存在確認
 			return (ft_strdup(cmd));
 		return (NULL);
 	}
