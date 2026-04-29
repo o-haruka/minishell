@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_redirect.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:33:34 by homura            #+#    #+#             */
-/*   Updated: 2026/04/28 16:45:16 by hkuninag         ###   ########.fr       */
+/*   Updated: 2026/04/29 21:52:42 by homura           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,8 @@ int	handle_redirection(t_cmd *cmd, t_token **current)
 	}
 	else
 	{
-		ft_putendl_fd("minishell: syntax error near unexpected token", 2);
+		ft_putendl_fd("minishell: syntax error near unexpected token",
+			STDERR_FILENO);
 		return (free(new_redir), free_cmd(cmd), REDIR_SYNTAX);
 	}
 	add_redir_to_list(cmd, new_redir);
