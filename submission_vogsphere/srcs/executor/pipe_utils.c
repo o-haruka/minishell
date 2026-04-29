@@ -43,7 +43,7 @@ int	open_all_pipes(int (*pipes)[2], int pipe_count)
 	{
 		if (pipe(pipes[i]) == -1)
 		{
-			perror("minishell: pipe");
+			print_error_msg(NULL, "pipe", strerror(errno));
 			j = 0;
 			while (j < i)
 			{
@@ -76,26 +76,16 @@ void	close_all_pipes(int (*pipes)[2], int pipe_count)
 	}
 }
 
-/*
-** env_to_envp で作った char** 配列を解放する。
-** 各文字列（"KEY=VALUE"）と配列本体を両方 free する。
-*/
-void	free_envp(char **envp)
+t_cmd	*get_nth_cmd(t_cmd *cmd, int idx)
 {
-	int	i;
-
-	if (!envp)
-		return ;
-	i = 0;
-	while (envp[i])
-		free(envp[i++]);
-	free(envp);
+	while (cmd && idx > 0)
+	{
+		cmd = cmd->next;
+		idx--;
+	}
+	return (cmd);
 }
 
-/*
-** 全子プロセスの終了を待ち、最後のコマンドの
-** 終了ステータスを shell->last_status に保存する。
-*/
 void	wait_all_cmds(pid_t *pids, int cmd_count, t_shell *shell)
 {
 	int	i;
@@ -103,11 +93,13 @@ void	wait_all_cmds(pid_t *pids, int cmd_count, t_shell *shell)
 
 	i = 0;
 	status = 0;
+	set_signal_for_parent_wait();
 	while (i < cmd_count)
 	{
-		waitpid(pids[i], &status, 0);
+		if (waitpid(pids[i], &status, 0) == -1)
+			print_error_msg(NULL, "waitpid", strerror(errno));
 		i++;
 	}
-	if (WIFEXITED(status))
-		shell->last_status = WEXITSTATUS(status);
+	update_last_status(status, shell);
+	setup_signals();
 }

@@ -53,7 +53,7 @@ static char	*get_cd_path(t_cmd *cmd, t_shell *shell)
 */
 static int	update_pwd_error(char *old_pwd, char *new_pwd)
 {
-	perror("minishell: malloc failed");
+	print_error_msg(NULL, "malloc", strerror(errno));
 	free(old_pwd);
 	free(new_pwd);
 	return (1);

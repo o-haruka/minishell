@@ -12,31 +12,10 @@
 
 #include "minishell.h"
 
-/*------------------------------------------------------------------
-** t_env リストから key を探し、見つかったらその value を new_value で上書きする関数
-------------------------------------------------------------------*/
-
-/* ** 1. リストの末尾に追加する汎用関数（後で export でも使い回せます！）
- */
-void	env_add_back(t_env **head, t_env *new_node)
-{
-	t_env	*current;
-
-	if (!head || !new_node)
-		return ;
-	if (*head == NULL)
-		*head = new_node;
-	else
-	{
-		current = *head;
-		while (current->next != NULL)
-			current = current->next;
-		current->next = new_node;
-	}
-}
-
-/* ** 2. 新規ノードを作成して追加する関数
- */
+/*
+** key・value で新規ノードを作り、リスト末尾に追加する。
+** update_env_value から key が未登録だった場合に呼ばれる。
+*/
 static int	add_new_env_node(t_env **env_head, char *key, char *value)
 {
 	t_env	*new_node;
@@ -60,8 +39,9 @@ static int	add_new_env_node(t_env **env_head, char *key, char *value)
 	return (0);
 }
 
-/* ** 3. メインの更新関数
- */
+/*
+** key が既存なら value を上書き、未登録なら新規ノードを追加する。
+*/
 int	update_env_value(t_env **env_head, char *key, char *new_value)
 {
 	t_env	*current;

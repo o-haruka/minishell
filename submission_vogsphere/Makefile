@@ -22,12 +22,12 @@ LIB_PATH    = libft
 
 SRCS        = main.c \
               executor/executor.c \
-              executor/execute_builtin.c \
               executor/pipe.c \
 			  executor/pipe_utils.c \
               executor/path.c \
 			  executor/redirect.c \
 			  executor/redirect_heredoc.c \
+              executor/exec_utils.c \
               signal.c \
               tokenizer/tokenizer.c \
               tokenizer/tokenizer_utils.c \
@@ -40,8 +40,8 @@ SRCS        = main.c \
               parser/parser_redirect.c \
 			  parser/expand.c \
 			  parser/expand_utils.c \
-			  env/env_init.c \
-			  env/env_utils.c \
+			  env/env_list.c \
+			  env/env_envp.c \
               env/env_update.c \
               builtins/builtin_utils.c \
               builtins/builtin_echo.c \
@@ -52,7 +52,7 @@ SRCS        = main.c \
               builtins/builtin_unset.c \
               builtins/builtin_exit.c \
               terminal.c \
-              utils.c \
+              error.c \
 
 OBJ         = $(SRCS:.c=.o)
 OBJS        = $(addprefix $(OBJ_PATH)/, $(OBJ))

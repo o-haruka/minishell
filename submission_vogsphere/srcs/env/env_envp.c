@@ -1,49 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env_utils.c                                        :+:      :+:    :+:   */
+/*   env_envp.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/28 16:32:17 by hkuninag          #+#    #+#             */
-/*   Updated: 2026/04/28 17:07:58 by hkuninag         ###   ########.fr       */
+/*   Created: 2026/04/29 00:00:00 by hkuninag          #+#    #+#             */
+/*   Updated: 2026/04/29 00:00:00 by hkuninag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /*
-** t_env リスト全体を解放する。
-** key・value・ノード本体の順で free する。
+** env_to_envp で作った char** 配列を解放する。
+** 各文字列（"KEY=VALUE"）と配列本体を両方 free する。
 */
-void	free_env(t_env *env)
+void	free_envp(char **envp)
 {
-	t_env	*tmp;
+	int	i;
 
-	while (env)
-	{
-		tmp = env->next;
-		free(env->key);
-		free(env->value);
-		free(env);
-		env = tmp;
-	}
-}
-
-/*
-** t_env リストから key が一致するノードを探し、value を返す。
-** 見つからなければ NULL を返す。
-*/
-char	*get_env_value(t_env *env, char *key)
-{
-	while (env)
-	{
-		if (ft_strncmp(env->key, key, ft_strlen(key)) == 0
-			&& ft_strlen(env->key) == ft_strlen(key))
-			return (env->value);
-		env = env->next;
-	}
-	return (NULL);
+	if (!envp)
+		return ;
+	i = 0;
+	while (envp[i])
+		free(envp[i++]);
+	free(envp);
 }
 
 /*

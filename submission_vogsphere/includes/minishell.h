@@ -148,6 +148,7 @@ env
 t_env				*init_env(char **envp);
 void				free_env(t_env *env);
 char				*get_env_value(t_env *env, char *key);
+void				env_add_back(t_env **head, t_env *new_node);
 char				**env_to_envp(t_env *env);
 int					update_env_value(t_env **env, char *key, char *new_value);
 
@@ -155,7 +156,6 @@ int					update_env_value(t_env **env, char *key, char *new_value);
 excecter
 ----------------------------------------*/
 void				ft_execute(t_shell *shell);
-void				execute_builtin(t_cmd *cmd, t_shell *shell);
 char				*search_path(char *cmd, t_env *env);
 int					ft_apply_redirs(t_cmd *cmd);
 int					apply_heredoc(char *delimiter);
@@ -166,6 +166,11 @@ int					open_all_pipes(int (*pipes)[2], int pipe_count);
 void				close_all_pipes(int (*pipes)[2], int pipe_count);
 void				wait_all_cmds(pid_t *pids, int cmd_count, t_shell *shell);
 void				free_envp(char **envp);
+int					execve_exit_status(void);
+void				update_last_status(int status, t_shell *shell);
+void				do_execve(char *path, t_cmd *cmd, t_shell *shell);
+int					wait_for_child(pid_t pid, int *status);
+t_cmd				*get_nth_cmd(t_cmd *cmd, int idx);
 
 /*----------------------------------------
 builtins

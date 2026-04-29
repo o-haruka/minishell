@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env_init.c                                         :+:      :+:    :+:   */
+/*   env_list.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:32:02 by hkuninag          #+#    #+#             */
-/*   Updated: 2026/04/28 16:44:21 by hkuninag         ###   ########.fr       */
+/*   Updated: 2026/04/29 00:00:00 by hkuninag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,4 +75,59 @@ t_env	*init_env(char **envp)
 		i++;
 	}
 	return (head);
+}
+
+/*
+** t_env リスト全体を解放する。
+** key・value・ノード本体の順で free する。
+*/
+void	free_env(t_env *env)
+{
+	t_env	*tmp;
+
+	while (env)
+	{
+		tmp = env->next;
+		free(env->key);
+		free(env->value);
+		free(env);
+		env = tmp;
+	}
+}
+
+/*
+** t_env リストから key が一致するノードを探し、value を返す。
+** 見つからなければ NULL を返す。
+*/
+char	*get_env_value(t_env *env, char *key)
+{
+	while (env)
+	{
+		if (ft_strncmp(env->key, key, ft_strlen(key)) == 0
+			&& ft_strlen(env->key) == ft_strlen(key))
+			return (env->value);
+		env = env->next;
+	}
+	return (NULL);
+}
+
+/*
+** t_env リストの末尾に new_node を追加する。
+** ft_lstadd_back 相当のリスト構造操作。
+*/
+void	env_add_back(t_env **head, t_env *new_node)
+{
+	t_env	*current;
+
+	if (!head || !new_node)
+		return ;
+	if (*head == NULL)
+		*head = new_node;
+	else
+	{
+		current = *head;
+		while (current->next != NULL)
+			current = current->next;
+		current->next = new_node;
+	}
 }
