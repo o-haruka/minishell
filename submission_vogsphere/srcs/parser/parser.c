@@ -10,14 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-/********************************************************
-minishellパーサ：コマンド構造体リストを構築する主要関数群
-*********************************************************/
 #include "minishell.h"
 
-// ---------------------------------------------------------
-// 3. コマンド構造体(t_cmd)の初期化関数
-// ---------------------------------------------------------
+/*
+** Allocate and zero-initialize a t_cmd node.
+** Called by parse_command for each pipe-separated command.
+*/
 t_cmd	*init_cmd_struct(void)
 {
 	t_cmd	*cmd;
@@ -31,9 +29,11 @@ t_cmd	*init_cmd_struct(void)
 	return (cmd);
 }
 
-// ---------------------------------------------------------
-// 4. コマンドの引数数をカウントする関数
-// ---------------------------------------------------------
+/*
+** Count WORD tokens in the current command segment (up to TK_PIPE or TK_EOF),
+** skipping redirection operator/filename pairs.
+** Used to size the args array in parse_command.
+*/
 int	count_words(t_token *current)
 {
 	int	count;
@@ -61,9 +61,10 @@ int	count_words(t_token *current)
 	return (count);
 }
 
-// ---------------------------------------------------------
-// 5. コマンドトークンを解析し、args/redirsに格納する関数
-// ---------------------------------------------------------
+/*
+** Fill cmd->args and cmd->redirs by consuming tokens until TK_PIPE or TK_EOF.
+** Returns 1 on success, 0 on allocation error, -1 on syntax error.
+*/
 static int	process_cmd_tokens(t_cmd *cmd, t_token **current)
 {
 	int	i;
@@ -92,9 +93,11 @@ static int	process_cmd_tokens(t_cmd *cmd, t_token **current)
 	return (1);
 }
 
-// ---------------------------------------------------------
-// 2. 1コマンド分（パイプ区切り）を組み立てる関数
-// ---------------------------------------------------------
+/*
+** Build one t_cmd from the token stream up to the next TK_PIPE or TK_EOF.
+** Allocates args sized by count_words, then fills it via process_cmd_tokens.
+** Called by parse for each pipe-separated segment.
+*/
 t_cmd	*parse_command(t_token **current)
 {
 	t_cmd	*cmd;
@@ -115,9 +118,11 @@ t_cmd	*parse_command(t_token **current)
 	return (cmd);
 }
 
-// ---------------------------------------------------------
-// 1. 全体のパースを統括するエントリー関数
-// ---------------------------------------------------------
+/*
+** Entry point for parsing. Converts a token list into a t_cmd linked list.
+** Calls parse_command once per pipe-separated segment.
+** Returns the head of the command list, or NULL on error.
+*/
 t_cmd	*parse(t_token *tokens)
 {
 	t_cmd	*cmd_head;

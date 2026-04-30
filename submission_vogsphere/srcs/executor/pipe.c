@@ -10,38 +10,14 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-/*
-** Pipeline execution flow:
-**
-**   ft_execute_pipeline
-**    ├─ ① malloc: pipes, pids
-**    ├─ ② open_all_pipes()
-**    ├─ ③ prepare_heredocs()
-**    ├─ ④ fork_all_cmds()
-**    │    └─ exec_pipeline_child(i)
-**    │         ├─ set_child_io()      — wire stdin/stdout to pipes
-**    │         ├─ close_all_pipes()   — close inherited fds
-**    │         ├─ ft_apply_redirs()   — apply redirections
-**    │         └─ exec_child_execve() — execve or exit(127)
-**    ├─ ⑤ close_all_pipes()  — parent closes its copies
-**    ├─ ⑥ wait_all_cmds()
-**    └─ ⑦ free: pipes, pids
-**
-** Pipe index layout (ls | grep foo | wc -l):
-**
-**   cmd idx:  [0] ls     [1] grep     [2] wc
-**   pipe:          pipes[0]   pipes[1]
-**
-**   idx 0: stdout → pipes[0][1]
-**   idx 1: stdin  ← pipes[0][0],  stdout → pipes[1][1]
-**   idx 2: stdin  ← pipes[1][0]
-**
-** The parent must close all pipes after fork so that children
-** reading from a pipe receive EOF when the upstream writer exits.
-*/
-
 #include "minishell.h"
 
+/*
+** Wire stdin/stdout of this child to the correct pipe ends.
+** Not the first cmd (idx > 0): read from the previous pipe's read end.
+** Not the last cmd (idx < count-1): write to the current pipe's write end.
+** Called by exec_pipeline_child before closing all pipe fds.
+*/
 static void	set_child_io(int idx, int count, int (*pipes)[2])
 {
 	if (idx > 0)
@@ -62,6 +38,11 @@ static void	set_child_io(int idx, int count, int (*pipes)[2])
 	}
 }
 
+/*
+** Run inside the child process for one pipeline stage.
+** Sets up I/O, closes all inherited pipe fds, applies redirections,
+** then execves. Never returns.
+*/
 static void	exec_pipeline_child(int idx, int count, int (*pipes)[2],
 		t_shell *shell)
 {
@@ -85,6 +66,10 @@ static void	exec_pipeline_child(int idx, int count, int (*pipes)[2],
 	do_execve(path, cmd, shell);
 }
 
+/*
+** Fork one child per command. All children are created before any are
+** waited on so they run concurrently. Called by ft_execute_pipeline.
+*/
 static int	fork_all_cmds(t_shell *shell, int cmd_count, int (*pipes)[2],
 		pid_t *pids)
 {
@@ -106,6 +91,11 @@ static int	fork_all_cmds(t_shell *shell, int cmd_count, int (*pipes)[2],
 	return (0);
 }
 
+/*
+** Entry point for pipeline execution, called by ft_execute when cmd->next
+** is non-NULL. Allocates pipes and pids, forks all children, waits for
+** them, then cleans up.
+*/
 void	ft_execute_pipeline(t_shell *shell)
 {
 	int		cmd_count;

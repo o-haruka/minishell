@@ -13,9 +13,8 @@
 #include "minishell.h"
 
 /*
-** 構文エラー時にエラーメッセージを出力して -1 を返すヘルパー。
-** token が NULL か TK_EOF の場合は "newline" を、
-** それ以外は実際のトークン文字列を表示する。
+** Print a syntax error and return -1. Shows "newline" for EOF/NULL tokens,
+** otherwise shows the actual token string. Called by check_pipe/check_redir.
 */
 static int	print_syntax_err(t_token *tok)
 {
@@ -30,8 +29,8 @@ static int	print_syntax_err(t_token *tok)
 }
 
 /*
-** リダイレクトトークンの直後を検証する。
-** 直後が WORD 以外（EOF、パイプ、別のリダイレクト）なら構文エラー。
+** Verify that a redirection operator is followed by a WORD token.
+** Returns -1 on error. Called by ft_check_syntax.
 */
 static int	check_redir(t_token *tok)
 {
@@ -44,9 +43,8 @@ static int	check_redir(t_token *tok)
 }
 
 /*
-** パイプトークンの前後を検証する。
-** ・先頭に | がある（prev == NULL）
-** ・| の直後が | か EOF
+** Verify that '|' is not at the start and is followed by a non-pipe token.
+** Returns -1 on error. Called by ft_check_syntax.
 */
 static int	check_pipe(t_token *prev, t_token *tok)
 {
@@ -61,12 +59,8 @@ static int	check_pipe(t_token *prev, t_token *tok)
 }
 
 /*
-** トークン列全体を走査して構文エラーを検出する。
-** 戻り値: 0 = 問題なし / -1 = 構文エラー
-**
-** チェック内容：
-**   1. パイプ関連エラー（先頭パイプ、連続パイプ）
-**   2. リダイレクト後のトークン欠落
+** Walk the token list and validate pipe and redirection syntax.
+** Returns 0 on success, -1 on error. Called by tokenize.
 */
 int	ft_check_syntax(t_token *tokens)
 {

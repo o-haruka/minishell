@@ -12,21 +12,10 @@
 
 #include "minishell.h"
 
-/*--------------------------------------------
-** PATH探索の概要
-** - PATHの値はenv_utils.cのget_env_value関数から取得
-** - ft_split()でパス文字列を:で分割
-** - search_path()で各ディレクトリを探索
-** - access()で実行権限を確認
-**
-** minishellでユーザーが入力したコマンド（例: ls, grepなど）の
-** 実行ファイルを見つけるための最初のステップ。
----------------------------------------------*/
-
-/*--------------------------------------------
-** 1. 文字列配列の解放
-** 二重ポインタで確保した配列を全てfreeする
----------------------------------------------*/
+/*
+** Free a NULL-terminated array of strings and the array itself.
+** Helper used only within path.c.
+*/
 static void	free_array(char **arr)
 {
 	int	i;
@@ -42,14 +31,10 @@ static void	free_array(char **arr)
 	free(arr);
 }
 
-/*--------------------------------------------
-** 2. ディレクトリパスとコマンド名を '/' で結合する
-** 例: dir="/bin", cmd="ls" -> "/bin/ls"
-** /bin
-** /bin/ (末尾の`/`を足す)
-** /bin/ls (lsを足す)
-** `PATH変数で見つかったディレクトリ` + `/` + `コマンド名`
----------------------------------------------*/
+/*
+** Concatenates a directory and a command name with '/' between them.
+** Helper for find_executable_in_paths.
+*/
 static char	*join_path(char *dir, char *cmd)
 {
 	char	*tmp;
@@ -63,11 +48,10 @@ static char	*join_path(char *dir, char *cmd)
 	return (full_path);
 }
 
-/*--------------------------------------------
-** 3. PATH配列から実行可能ファイルを探索
-** PATHの配列を巡回し、実行可能なフルパスを探す
-** 見つかればそのフルパスを、見つからなければNULLを返す
----------------------------------------------*/
+/*
+** Iterates over a PATH directory array and returns the first executable
+** path found via access(X_OK). Returns NULL if no match.
+*/
 static char	*find_executable_in_paths(char **paths, char *cmd)
 {
 	char	*full_path;
@@ -87,12 +71,11 @@ static char	*find_executable_in_paths(char **paths, char *cmd)
 	return (NULL);
 }
 
-/*--------------------------------------------
-** 4. コマンドのフルパス検索
-** - コマンドに'/'が含まれていれば直接パスを確認
-** - 含まれていなければPATH環境変数からディレクトリ配列を作成し探索
-** - 実行可能なパスが見つかればそのフルパス、なければNULLを返す
----------------------------------------------*/
+/*
+** Resolves a command name to an executable path. Handles absolute/relative
+** paths directly; otherwise splits PATH and searches each directory.
+** Called by exec_external and exec_pipeline_child.
+*/
 char	*search_path(char *cmd, t_env *env)
 {
 	char	**paths;

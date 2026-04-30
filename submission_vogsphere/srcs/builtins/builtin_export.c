@@ -13,12 +13,9 @@
 #include "minishell.h"
 
 /*
-** 全環境変数を "declare -x KEY="VALUE"" 形式で表示する。
-** value が NULL のものは "declare -x KEY" と表示する。
-** 出力例:
-**   declare -x HOME="/home/hkuninag"
-**   declare -x PATH="/usr/bin:/bin"
-**   declare -x NAME        ← value が NULL の場合（値なしで登録された変数）
+** Print all env variables in "declare -x KEY=\"VALUE\"" format.
+** Variables without a value are printed as "declare -x KEY".
+** Called by ft_export when no arguments are given.
 */
 static void	ft_print_export(t_env *env)
 {
@@ -38,21 +35,8 @@ static void	ft_print_export(t_env *env)
 }
 
 /*
-** 環境変数名として有効かチェックする。
-** 戻り値: 1（有効）/ 0（無効）
-**
-** 有効な環境変数名のルール：
-**   - 1文字以上であること
-**   - 先頭は英字（a-z, A-Z）またはアンダースコア（_）
-**   - 2文字目以降は英数字（a-z, A-Z, 0-9）またはアンダースコア（_）
-**
-** 例:
-**   "NAME"   → 有効
-**   "_VAR"   → 有効
-**   ""       → 無効（空文字）
-**   "=VALUE" → 無効（先頭が =）
-**   "1NAME"  → 無効（先頭が数字）
-**   "NA-ME"  → 無効（ハイフンは使えない）
+** Return 1 if key is a valid env variable name: must start with alpha or '_',
+** followed by alphanumeric or '_' characters only. Returns 0 otherwise.
 */
 static int	ft_is_valid_key(char *key)
 {
@@ -73,9 +57,8 @@ static int	ft_is_valid_key(char *key)
 }
 
 /*
-** '=' を含む引数 "KEY=VALUE" を解析して env に登録する。
-** key を ft_substr で切り出し、有効性を確認してから update_env_value を呼ぶ。
-** 戻り値: 0（成功）/ 1（失敗）
+** Parse "KEY=VALUE", validate the key, then update the env list.
+** Called by ft_export_var when '=' is found in the argument.
 */
 static int	ft_export_with_eq(t_shell *shell, char *arg, char *eq)
 {
@@ -103,9 +86,8 @@ static int	ft_export_with_eq(t_shell *shell, char *arg, char *eq)
 }
 
 /*
-** 引数1つを解析して env リストに追加・更新する。
-** '=' なし → key だけ登録、'=' あり → ft_export_with_eq に委譲する。
-** 戻り値: 0（成功）/ 1（失敗）
+** Process one export argument: parse KEY or KEY=VALUE and update the env list.
+** Delegates to ft_export_with_eq when '=' is found.
 */
 static int	ft_export_var(t_shell *shell, char *arg)
 {
@@ -123,15 +105,8 @@ static int	ft_export_var(t_shell *shell, char *arg)
 }
 
 /*
-** export ビルトインの実装。
-** 引数なし     → 全変数を "declare -x" 形式で一覧表示
-** 引数あり     → 各引数を解析して env リストに追加・更新
-**
-** 例:
-**   export               → 全環境変数を表示
-**   export NAME=tanaka   → NAME=tanaka を登録
-**   export A=1 B=2       → A と B をまとめて登録
-**   export INVALID=      → key="INVALID", value="" として登録（空値はOK）
+** Builtin export: print all env vars in declare-format if no args,
+** otherwise parse and register each argument in the env list.
 */
 int	ft_export(t_cmd *cmd, t_shell *shell)
 {

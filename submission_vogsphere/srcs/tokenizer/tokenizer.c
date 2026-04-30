@@ -12,7 +12,10 @@
 
 #include "minishell.h"
 
-// 1. ループで文字を読み進め、トークンリストを構築する
+/*
+** Scan the input string and build the token list by dispatching to
+** append_operator or append_word. Called by tokenize.
+*/
 static int	process_tokens(t_token **head, char **line)
 {
 	while (**line)
@@ -33,7 +36,10 @@ static int	process_tokens(t_token **head, char **line)
 	return (1);
 }
 
-// 2. 最後に EOF トークンを追加する。malloc失敗時は全破棄する
+/*
+** Append a TK_EOF sentinel to the list.
+** Frees the entire list and returns NULL on allocation failure.
+*/
 static t_token	*append_eof(t_token **head)
 {
 	t_token	*eof_token;
@@ -49,13 +55,9 @@ static t_token	*append_eof(t_token **head)
 }
 
 /*
-** 入力文字列 line をトークンに分割し、連結リストとして返す。
-** 以下の順で処理する：
-**   1. クォートの閉じ忘れチェック（エラーなら NULL を返す）
-**   2. スペースを読み飛ばす
-**   3. メタ文字（| < >）はオペレータトークンとして追加
-**   4. それ以外は単語トークンとして追加
-**   5. 終端に TK_EOF トークンを追加して返す
+** Entry point for tokenization. Checks for unclosed quotes, builds the token
+** list, appends a TK_EOF sentinel, and validates syntax.
+** Returns the token list head, or NULL on error.
 */
 t_token	*tokenize(char *line)
 {

@@ -13,8 +13,8 @@
 #include "minishell.h"
 
 /*
-** key・value で新規ノードを作り、リスト末尾に追加する。
-** update_env_value から key が未登録だった場合に呼ばれる。
+** Allocate a new t_env node and append it to the list.
+** Called by update_env_value when key is not found.
 */
 static int	add_new_env_node(t_env **env_head, char *key, char *value)
 {
@@ -40,7 +40,8 @@ static int	add_new_env_node(t_env **env_head, char *key, char *value)
 }
 
 /*
-** key が既存なら value を上書き、未登録なら新規ノードを追加する。
+** Update the value of key in the env list, or add a new node if not found.
+** Called by ft_export, ft_cd (PWD/OLDPWD), and add_new_env_node.
 */
 int	update_env_value(t_env **env_head, char *key, char *new_value)
 {

@@ -6,15 +6,14 @@
 /*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 00:00:00 by hkuninag          #+#    #+#             */
-/*   Updated: 2026/04/29 00:00:00 by hkuninag         ###   ########.fr       */
+/*   Updated: 2026/04/30 18:06:07 by hkuninag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /*
-** execve 失敗後の errno を POSIX 準拠の終了ステータスに変換する。
-** ENOENT=127（コマンド未発見）、EACCES/EISDIR=126（実行権限なし）。
+** Maps errno after a failed execve to a POSIX exit status.
 */
 int	execve_exit_status(void)
 {
@@ -26,8 +25,8 @@ int	execve_exit_status(void)
 }
 
 /*
-** path・envp・execve をまとめて処理し、必ず exit() する。
-** execve 失敗時はコマンド名付きエラーを出力してから終了する。
+** Converts env list to envp and calls execve. On failure, prints an error
+** and exits. Called in exec_external and exec_pipeline_child; never returns.
 */
 void	do_execve(char *path, t_cmd *cmd, t_shell *shell)
 {
@@ -49,8 +48,9 @@ void	do_execve(char *path, t_cmd *cmd, t_shell *shell)
 }
 
 /*
-** シグナルを待機用に設定してから waitpid し、終わったら元に戻す。
-** 成功: 0 / 失敗（waitpid エラー）: -1
+** Sets signals to wait mode, calls waitpid, then restores signals.
+** Returns 0 on success, -1 on waitpid error. Called by exec_external
+** and apply_heredoc.
 */
 int	wait_for_child(pid_t pid, int *status)
 {
@@ -66,8 +66,9 @@ int	wait_for_child(pid_t pid, int *status)
 }
 
 /*
-** waitpid で取得した status を shell->last_status に反映する。
-** シグナル終了時は bash に合わせた見た目処理も行う。
+** Translates a raw waitpid status into shell->last_status.
+** Handles normal exit and signal termination (128+signum).
+** Called after every waitpid.
 */
 void	update_last_status(int status, t_shell *shell)
 {

@@ -3,31 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:33:37 by hkuninag          #+#    #+#             */
-/*   Updated: 2026/04/29 22:22:20 by homura           ###   ########.fr       */
+/*   Updated: 2026/04/30 17:06:36 by hkuninag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/* ── 処理の流れ（下が詳細、上がエントリポイント） ──────────
-**   ft_expand_args          コマンドリスト全体のエントリポイント
-**     ft_expand_str         1つの文字列を展開する
-**       ft_toggle_quote     クォートの開始/終了をトグルする
-**       ft_handle_dollar    '$' を処理する
-**         ft_get_dollar_value  '$' の展開値を決定する
-** ──────────────────────────────────────────────────────────── */
-
 /*
-** '$' 1つ分を処理して、対応する値の文字列を返す。
-** 戻り値は必ず ft_strdup で新規確保した文字列（呼び出し元が free する）。
-**
-** $?       → 直前のコマンドの終了コード（例: "0", "127"）
-** $HOME    → env リストから検索した値（例: "/Users/hk"）
-** $ 単体   → '$' をそのまま返す（$ の直後が変数名でない場合）
-** 未定義変数 → "" を返す（エラーにはしない）
+** Read the variable name after '$' and return its expanded value.
+** $? → last exit status; $NAME → env value; bare $ → "$"; undefined → "".
+** Returns a newly allocated string; the caller is responsible for freeing it.
 */
 static char	*ft_get_dollar_value(char *str, int *i, t_shell *shell)
 {
@@ -51,13 +39,9 @@ static char	*ft_get_dollar_value(char *str, int *i, t_shell *shell)
 }
 
 /*
-** '$' 1文字分を処理し、*res を展開結果で更新する。
-** 戻り値: 0=成功、-1=失敗（失敗時は *res を解放して NULL にする）
-**
-** res が char **（ダブルポインタ）な理由:
-**   ft_append_expanded は新しいアドレスを返すため、
-**   呼び出し元の result 変数自体を更新する必要があるから。
-**   char * のままだと呼び出し元の result を書き換えられない。
+** Expand one '$' token and append the result to *res.
+** Takes char ** so the caller's pointer can be updated by ft_append_expanded.
+** Returns 0 on success, -1 on allocation failure (also frees and NULLs *res).
 */
 static int	ft_handle_dollar(char **res, char *str, int *i, t_shell *shell)
 {
@@ -77,13 +61,8 @@ static int	ft_handle_dollar(char **res, char *str, int *i, t_shell *shell)
 }
 
 /*
-** クォート文字 c に応じて in_sq / in_dq をトグルし、i を1進める。
-** クォート文字自体は result に追加しない（呼び出し元で追加処理をしない）。
-**
-** 例）'hello' を処理するとき
-**   ' で in_sq が false → true になる（シングルクォート開始）
-**   h e l l o はそのまま result に追加される
-**   ' で in_sq が true → false になる（シングルクォート終了）
+** Toggle the single- or double-quote flag when a quote character is seen,
+** then advance i past it. The quote character itself is not added to result.
 */
 static void	ft_toggle_quote(char c, bool *in_sq, bool *in_dq, int *i)
 {
@@ -95,14 +74,9 @@ static void	ft_toggle_quote(char c, bool *in_sq, bool *in_dq, int *i)
 }
 
 /*
-** 文字列 str を1文字ずつ走査し、展開済みの新しい文字列を返す。
-**
-** 例）"$HOME/doc"  → "/Users/hk/doc"  （$HOME を展開）
-**    "'$HOME'"    → "$HOME"           （' ' 内は展開しない）
-**    "\"$HOME\""  → "/Users/hk"       （" " 内の $ は展開する）
-**    "hello"      → "hello"           （変化なし）
-**
-** クォート文字（' や "）自体は結果に含まれない。
+** Scan str one character at a time and return a fully expanded string.
+** Single-quoted text is copied verbatim; '$' outside single quotes is expanded.
+** Quote characters themselves are stripped from the output.
 */
 static char	*ft_expand_str(char *str, t_shell *shell)
 {
@@ -132,18 +106,15 @@ static char	*ft_expand_str(char *str, t_shell *shell)
 }
 
 /*
-** エントリポイント：shell->cmds の全コマンドを走査し、
-** 各 args[] をクォート除去・環境変数展開して上書きする。
-**
-** 例）ユーザーが echo "$HOME" 'hello' と入力した場合
-**     args = {"echo", "\"$HOME\"", "'hello'", NULL}
-**     展開後 = {"echo", "/Users/hk", "hello",   NULL}
+** Entry point for expansion. Walks all commands in shell->cmds and replaces
+** each arg with its quote-stripped, variable-expanded form.
+** Called after parsing, before execution.
 */
 void	ft_expand_args(t_shell *shell)
 {
-	t_cmd *cmd;
-	char *expanded;
-	int i;
+	t_cmd	*cmd;
+	char	*expanded;
+	int		i;
 
 	cmd = shell->cmds;
 	while (cmd)

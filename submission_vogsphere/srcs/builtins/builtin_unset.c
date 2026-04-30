@@ -13,12 +13,8 @@
 #include "minishell.h"
 
 /*
-** env リストから key が一致するノードを1つ削除する。
-** 削除の仕組み：
-**   削除前: [prev] → [current] → [next]
-**   削除後: [prev] → [next]
-**   ※ prev->next を current->next に繋ぎ替えて current を free する
-** 先頭ノードが対象の場合は shell->env 自体を次に付け替える。
+** Remove the node matching key from the env list and free it.
+** Updates the head pointer when the first node is removed.
 */
 static void	ft_unset_var(t_shell *shell, char *key)
 {
@@ -46,12 +42,7 @@ static void	ft_unset_var(t_shell *shell, char *key)
 }
 
 /*
-** unset ビルトインの実装。
-** 引数を複数受け取り、それぞれを env リストから削除する。
-**
-** 例) unset NAME USER PATH
-**   → args[0]="unset", args[1]="NAME", args[2]="USER", args[3]="PATH"
-**   → NAME, USER, PATH を順番に env リストから削除する
+** Builtin unset: remove each argument from the env list.
 */
 int	ft_unset(t_cmd *cmd, t_shell *shell)
 {

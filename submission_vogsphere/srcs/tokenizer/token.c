@@ -12,7 +12,9 @@
 
 #include "minishell.h"
 
-// 新しいトークンを作成する
+/*
+** Allocate a new t_token with the given word and kind.
+*/
 t_token	*token_new(char *word, t_token_kind kind)
 {
 	t_token	*token;
@@ -26,7 +28,9 @@ t_token	*token_new(char *word, t_token_kind kind)
 	return (token);
 }
 
-// リストの末尾に追加する
+/*
+** Append new_token to the end of the token list.
+*/
 void	token_add_back(t_token **head, t_token *new_token)
 {
 	t_token	*last;
@@ -44,7 +48,9 @@ void	token_add_back(t_token **head, t_token *new_token)
 	last->next = new_token;
 }
 
-// トークンリスト全体を解放する
+/*
+** Free the entire token list, including each word string.
+*/
 void	token_free(t_token **head)
 {
 	t_token	*current;

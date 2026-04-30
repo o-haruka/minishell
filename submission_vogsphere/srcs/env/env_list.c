@@ -13,8 +13,8 @@
 #include "minishell.h"
 
 /*
-** "KEY=VALUE" 形式の文字列から t_env を1つ作って返す。
-** key と value はそれぞれ ft_strdup でコピーして保持する。
+** Allocate a new t_env node from a "KEY=VALUE" string.
+** Duplicates key and value separately. Returns NULL on failure.
 */
 static t_env	*ft_new_env(char *entry)
 {
@@ -44,10 +44,8 @@ static t_env	*ft_new_env(char *entry)
 }
 
 /*
-** envp（文字列配列）を走査し、t_env の連結リストに変換して返す。
-** 例) envp = {"HOME=/home/rex", "USER=rex", NULL}
-**     → [key=HOME, value=/home/rex] → [key=USER, value=rex] → NULL
-** main.c の初期化処理から呼ばれる。
+** Convert a char** envp array into a t_env linked list.
+** Called once at startup from main to initialize shell->env.
 */
 t_env	*init_env(char **envp)
 {
@@ -78,8 +76,7 @@ t_env	*init_env(char **envp)
 }
 
 /*
-** t_env リスト全体を解放する。
-** key・value・ノード本体の順で free する。
+** Free the entire t_env list including all keys, values, and nodes.
 */
 void	free_env(t_env *env)
 {
@@ -96,8 +93,7 @@ void	free_env(t_env *env)
 }
 
 /*
-** t_env リストから key が一致するノードを探し、value を返す。
-** 見つからなければ NULL を返す。
+** Find a key in the env list and return its value, or NULL if not found.
 */
 char	*get_env_value(t_env *env, char *key)
 {
@@ -112,8 +108,8 @@ char	*get_env_value(t_env *env, char *key)
 }
 
 /*
-** t_env リストの末尾に new_node を追加する。
-** ft_lstadd_back 相当のリスト構造操作。
+** Append new_node to the end of the env list.
+** Called by add_new_env_node when registering a new variable.
 */
 void	env_add_back(t_env **head, t_env *new_node)
 {

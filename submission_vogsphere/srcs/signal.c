@@ -15,9 +15,8 @@
 int		g_signal = 0;
 
 /*
-** 入力待ち時のSIGINT（Ctrl-C）用ハンドラ
-** ユーザーがプロンプトで入力中にCtrl-Cを押した場合、
-** 入力をキャンセルして新しいプロンプトを表示する。
+** SIGINT handler for the interactive prompt. Clears the current input line
+** and redisplays the prompt when the user presses Ctrl-C.
 */
 void	sigint_handler(int sig)
 {
@@ -29,10 +28,8 @@ void	sigint_handler(int sig)
 }
 
 /*
-** コマンド実行中（waitpid中）の親プロセス用のシグナル設定
-** SIGINT（Ctrl-C）  -> 無視 (SIG_IGN)（子プロセスにのみ伝播）
-** SIGQUIT（Ctrl-\） -> 無視 (SIG_IGN)
-** これにより、親シェルがコマンド実行中に割り込まれないようにする。
+** Ignore SIGINT and SIGQUIT in the parent while waiting for a child,
+** so Ctrl-C only terminates the child and not the shell itself.
 */
 void	set_signal_for_parent_wait(void)
 {
@@ -46,10 +43,8 @@ void	set_signal_for_parent_wait(void)
 }
 
 /*
-** execveで実行される子プロセス用のシグナル設定
-** SIGINT（Ctrl-C）  -> デフォルトの挙動に戻す (SIG_DFL)
-** SIGQUIT（Ctrl-\） -> デフォルトの挙動に戻す (SIG_DFL)
-** これにより、lsやcatなどの外部コマンドが通常通りシグナルで終了できる。
+** Reset SIGINT and SIGQUIT to defaults in the child before execve,
+** so external commands receive signals normally.
 */
 void	set_signal_for_child(void)
 {
@@ -63,10 +58,8 @@ void	set_signal_for_child(void)
 }
 
 /*
-** 入力待ち時のシグナル設定（メインループ用）
-**  - SIGINT: 独自ハンドラ（プロンプトをリセット）
-**  - SIGQUIT: 無視
-** readlineを使ったプロンプト入力時に呼び出す。
+** Set up signals for prompt mode: custom SIGINT handler and ignore SIGQUIT.
+** Called at startup and after each child process completes.
 */
 void	setup_signals(void)
 {

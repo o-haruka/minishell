@@ -12,9 +12,10 @@
 
 #include "minishell.h"
 
-// ポインタを進める処理
-// クォート内のスペースやメタ文字を単語の区切りとして扱わないために、クォートの開閉状態を追跡する。
-// 例: "hello world" → スペースを無視して1トークンにする
+/*
+** Advance *line past the current word, tracking quote state so that spaces
+** and metacharacters inside quotes are not treated as delimiters.
+*/
 static void	advance_word_ptr(char **line)
 {
 	char	quote;
@@ -35,7 +36,10 @@ static void	advance_word_ptr(char **line)
 	}
 }
 
-// 単語の終了位置までポインタを進め、トークンを作成する
+/*
+** Extract the next word token from *line and append it to head.
+** Called by process_tokens for non-metacharacter input.
+*/
 int	append_word(t_token **head, char **line)
 {
 	char	*start;

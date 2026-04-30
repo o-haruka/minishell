@@ -13,7 +13,8 @@
 #include "minishell.h"
 
 /*
-** コマンドラインを読み込む
+** Read one line of input via readline (interactive) or get_next_line (pipe).
+** Strips the trailing newline in non-interactive mode.
 */
 static char	*read_line_input(void)
 {
@@ -31,7 +32,8 @@ static char	*read_line_input(void)
 }
 
 /*
-** コマンドをトークン化・パース・実行する
+** Tokenize, parse, expand, and execute one command line.
+** Called per iteration of minishell_loop.
 */
 static void	process_command(t_shell *shell, char *line)
 {
@@ -62,7 +64,7 @@ static void	process_command(t_shell *shell, char *line)
 }
 
 /*
-** ループ処理を行う関数
+** Main shell loop: read a line, process it, repeat until EOF.
 */
 void	minishell_loop(t_shell *shell)
 {

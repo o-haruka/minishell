@@ -16,9 +16,10 @@
 #define REDIR_ERR 0
 #define REDIR_SYNTAX -1
 
-// ---------------------------------------------------------
-// 2. リダイレクト構造体(t_redir)の初期化関数
-// ---------------------------------------------------------
+/*
+** Allocate and zero-initialize a t_redir node.
+** Called by handle_redirection for each redirection token.
+*/
 static t_redir	*init_redir_struct(void)
 {
 	t_redir	*redir;
@@ -30,9 +31,10 @@ static t_redir	*init_redir_struct(void)
 	return (redir);
 }
 
-// ---------------------------------------------------------
-// 3. コマンドのリダイレクトリストに新しい要素を追加する関数
-// ---------------------------------------------------------
+/*
+** Append new_redir to the end of cmd->redirs.
+** Maintains left-to-right redirection order. Called by handle_redirection.
+*/
 static void	add_redir_to_list(t_cmd *cmd, t_redir *new_redir)
 {
 	t_redir	*last;
@@ -48,10 +50,11 @@ static void	add_redir_to_list(t_cmd *cmd, t_redir *new_redir)
 	}
 }
 
-// t_redir 構造体を作って繋ぐ
-// ---------------------------------------------------------
-// 1. リダイレクトトークンを解析し、リストに追加する関数
-// ---------------------------------------------------------
+/*
+** Parse one redirection token pair (operator + filename) and append it
+** to cmd->redirs. Advances *current past both tokens.
+** Returns REDIR_OK (1), REDIR_ERR (0), or REDIR_SYNTAX (-1).
+*/
 int	handle_redirection(t_cmd *cmd, t_token **current)
 {
 	t_redir	*new_redir;

@@ -13,6 +13,10 @@
 #include "minishell.h"
 #include <fcntl.h>
 
+/*
+** Applies a heredoc redirection by dup2-ing the pre-opened fd to stdin.
+** Called by ft_apply_redirs when the redir kind is TK_HEREDOC.
+*/
 static int	apply_heredoc_redir(t_redir *redir)
 {
 	if (redir->fd == -1)
@@ -23,6 +27,10 @@ static int	apply_heredoc_redir(t_redir *redir)
 	return (0);
 }
 
+/*
+** Opens the file for input, output, or append redirection.
+** Sets target_fd (STDIN or STDOUT) and returns the opened fd.
+*/
 static int	open_file_redir(t_redir *redir, int *target_fd)
 {
 	if (redir->kind == TK_REDIRECT_IN)
@@ -36,6 +44,10 @@ static int	open_file_redir(t_redir *redir, int *target_fd)
 	return (open(redir->file, O_WRONLY | O_CREAT | O_APPEND, 0644));
 }
 
+/*
+** Opens the redirect target file and dup2s it to the appropriate
+** standard fd. Called by ft_apply_redirs for non-heredoc redirections.
+*/
 static int	apply_file_redir(t_redir *redir)
 {
 	int	fd;
@@ -56,6 +68,10 @@ static int	apply_file_redir(t_redir *redir)
 	return (0);
 }
 
+/*
+** Applies all redirections in a command's redir list in order.
+** Called before exec in both builtin and external commands.
+*/
 int	ft_apply_redirs(t_cmd *cmd)
 {
 	t_redir	*r;

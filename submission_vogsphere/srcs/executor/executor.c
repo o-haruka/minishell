@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:31:17 by homura            #+#    #+#             */
-/*   Updated: 2026/04/30 16:32:31 by homura           ###   ########.fr       */
+/*   Updated: 2026/04/30 18:21:25 by hkuninag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,33 +14,90 @@
 #include <errno.h>
 #include <sys/wait.h>
 
-/*--------------------------------------------
-** 1. ビルトインコマンドを実行する
-** リダイレクト適用前後の stdio を dup で退避・復元する。
-** リダイレクト失敗時もステータス設定と復元は必ず行う。
---------------------------------------------*/
+/*
+** Save stdin and stdout by dup-ing them before a builtin runs.
+** Returns 0 on success, -1 on failure. Called by execute_builtin.
+*/
+static int	save_stdio(int *saved_stdout, int *saved_stdin)
+{
+	*saved_stdout = dup(STDOUT_FILENO);
+	if (*saved_stdout == -1)
+	{
+		print_error_msg(NULL, "dup stdout", strerror(errno));
+		return (-1);
+	}
+	*saved_stdin = dup(STDIN_FILENO);
+	if (*saved_stdin == -1)
+	{
+		print_error_msg(NULL, "dup stdin", strerror(errno));
+		close(*saved_stdout);
+		*saved_stdout = -1;
+		return (-1);
+	}
+	return (0);
+}
+
+/*
+** Restore stdin and stdout from the saved fds, then close them.
+** Returns 0 on success, -1 on failure. Called by execute_builtin.
+*/
+static int	restore_stdio(int saved_stdout, int saved_stdin)
+{
+	if (saved_stdout != -1)
+	{
+		if (dup2(saved_stdout, STDOUT_FILENO) == -1)
+		{
+			print_error_msg(NULL, "dup2 stdout", strerror(errno));
+			close(saved_stdout);
+			if (saved_stdin != -1)
+				close(saved_stdin);
+			return (-1);
+		}
+		close(saved_stdout);
+	}
+	if (saved_stdin != -1)
+	{
+		if (dup2(saved_stdin, STDIN_FILENO) == -1)
+		{
+			print_error_msg(NULL, "dup2 stdin", strerror(errno));
+			close(saved_stdin);
+			return (-1);
+		}
+		close(saved_stdin);
+	}
+	return (0);
+}
+
+/*
+** Run a builtin command in the current process.
+** Saves/restores stdin and stdout around redirections so they don't persist.
+** Called by ft_execute when the command is a builtin.
+*/
 static void	execute_builtin(t_cmd *cmd, t_shell *shell)
 {
 	int	saved_stdout;
 	int	saved_stdin;
 
-	saved_stdout = dup(STDOUT_FILENO);
-	saved_stdin = dup(STDIN_FILENO);
+	saved_stdout = -1;
+	saved_stdin = -1;
+	if (save_stdio(&saved_stdout, &saved_stdin) == -1)
+	{
+		shell->last_status = 1;
+		return ;
+	}
 	if (ft_apply_redirs(cmd) == 0)
 		shell->last_status = call_builtin(cmd, shell);
 	else
 		shell->last_status = 1;
-	dup2(saved_stdout, STDOUT_FILENO);
-	dup2(saved_stdin, STDIN_FILENO);
-	close(saved_stdout);
-	close(saved_stdin);
+	if (restore_stdio(saved_stdout, saved_stdin) == -1)
+		shell->last_status = 1;
 }
 
-/*--------------------------------------------
-** 2. 外部コマンドを fork して実行する
-** 子: シグナルをデフォルトに戻し、リダイレクトを適用してから execve
-** 親: wait_for_child で子の終了を待ち、ステータスを反映する
---------------------------------------------*/
+/*
+** Fork and run an external command at the resolved path.
+** Child resets signals, applies redirections, then calls execve.
+** Parent waits for the child and updates last_status.
+*/
 static void	exec_external(char *path, t_cmd *cmd, t_shell *shell)
 {
 	pid_t	pid;
@@ -68,12 +125,11 @@ static void	exec_external(char *path, t_cmd *cmd, t_shell *shell)
 	free(path);
 }
 
-/*--------------------------------------------
-** 3. コマンドを振り分けて実行するエントリポイント
-** パイプあり  → ft_execute_pipeline に委譲
-** ビルトイン → execute_builtin で直接実行
-** 外部コマンド → パスを検索して exec_external でフォーク実行
---------------------------------------------*/
+/*
+** Entry point for command execution, called from the main shell loop.
+** Dispatches to ft_execute_pipeline (pipes), execute_builtin, or exec_external
+** depending on whether the command list has pipes or is a builtin.
+*/
 void	ft_execute(t_shell *shell)
 {
 	t_cmd	*cmd;

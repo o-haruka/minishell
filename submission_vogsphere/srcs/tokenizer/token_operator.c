@@ -12,8 +12,10 @@
 
 #include "minishell.h"
 
-// malloc失敗時は 0 を返し、成功時は 1 を返す
-// 新しいノードを作ってリストに繋ぐ
+/*
+** Create a token with the given string and kind and append it to head.
+** Returns 1 on success, 0 on allocation failure.
+*/
 static int	add_operator_token(t_token **head, char *operator_str,
 		t_token_kind kind)
 {
@@ -31,7 +33,9 @@ static int	add_operator_token(t_token **head, char *operator_str,
 	return (1);
 }
 
-// 演算子トークンを作成し、リストに追加し、入力読み込み位置を進める
+/*
+** Consume '|' from *line and add a TK_PIPE token to head.
+*/
 static int	append_pipe(t_token **head, char **line)
 {
 	char	*operator_str;
@@ -43,6 +47,9 @@ static int	append_pipe(t_token **head, char **line)
 	return (add_operator_token(head, operator_str, TK_PIPE));
 }
 
+/*
+** Consume '<' or '<<' from *line and add TK_REDIRECT_IN or TK_HEREDOC.
+*/
 static int	append_redirect_in(t_token **head, char **line)
 {
 	char	*operator_str;
@@ -64,6 +71,9 @@ static int	append_redirect_in(t_token **head, char **line)
 	return (add_operator_token(head, operator_str, TK_REDIRECT_IN));
 }
 
+/*
+** Consume '>' or '>>' from *line and add TK_REDIRECT_OUT or TK_APPEND.
+*/
 static int	append_redirect_out(t_token **head, char **line)
 {
 	char	*operator_str;
@@ -83,6 +93,10 @@ static int	append_redirect_out(t_token **head, char **line)
 	return (add_operator_token(head, operator_str, TK_REDIRECT_OUT));
 }
 
+/*
+** Dispatch to append_pipe, append_redirect_out, or append_redirect_in
+** based on the current character. Called by process_tokens.
+*/
 int	append_operator(t_token **head, char **line)
 {
 	if (**line == '|')

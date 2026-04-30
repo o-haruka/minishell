@@ -13,9 +13,7 @@
 #include "minishell.h"
 
 /*
-** 動的確保したメモリを解放してから exit() を呼ぶ。
-** code & 0xFF で終了コードを 0〜255 に収める。
-** (例: 256 → 0、257 → 1、-1 → 255)
+** Free all shell resources then call exit, clamping code to 0-255.
 */
 static void	ft_do_exit(t_shell *shell, int code)
 {
@@ -26,11 +24,8 @@ static void	ft_do_exit(t_shell *shell, int code)
 }
 
 /*
-** exit ビルトインの実装。
-** 引数なし        → last_status の値で終了
-** 引数1つ(数値)   → その値で終了
-** 引数1つ(非数値) → エラーを表示して終了しない
-** 引数2つ以上     → エラーを表示して終了しない
+** Builtin exit: exit with last_status if no arg, or with the numeric arg
+** if given. Prints an error and does not exit on non-numeric or too many args.
 */
 int	ft_exit(t_cmd *cmd, t_shell *shell)
 {

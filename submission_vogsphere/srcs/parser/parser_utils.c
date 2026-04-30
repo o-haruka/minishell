@@ -13,7 +13,10 @@
 #include "minishell.h"
 #include <stdlib.h>
 
-// t_redirリストを解放
+/*
+** Free all nodes in a t_redir list, including each node's file string.
+** Called by free_cmd.
+*/
 static void	free_redirs(t_redir *redir)
 {
 	t_redir	*tmp;
@@ -28,12 +31,10 @@ static void	free_redirs(t_redir *redir)
 	}
 }
 
-// t_cmd構造体を解放
-// ・args配列の各要素（cmd->args[0]～cmd->args[i-1]）
-// ・args配列本体
-// ・redirsリスト
-// ・cmd本体
-// をすべてfreeしてくれる関数。
+/*
+** Free a single t_cmd: all arg strings, the args array, the redirs list,
+** and the struct itself. Safe to call with NULL.
+*/
 void	free_cmd(t_cmd *cmd)
 {
 	int	i;
@@ -54,7 +55,9 @@ void	free_cmd(t_cmd *cmd)
 	free(cmd);
 }
 
-// t_cmdリスト全体を解放
+/*
+** Free an entire t_cmd linked list. Called on parse error or shell cleanup.
+*/
 void	free_cmds_list(t_cmd *cmd)
 {
 	t_cmd	*tmp;

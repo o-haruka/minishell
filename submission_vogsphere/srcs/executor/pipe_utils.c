@@ -13,8 +13,8 @@
 #include "minishell.h"
 
 /*
-** パイプで繋がったコマンドの個数を数えて返す。
-** 例) [ls] -> [grep] -> [wc] -> NULL なら 3 を返す。
+** Returns the number of commands in the linked list.
+** Used by ft_execute_pipeline to size the pipes and pids arrays.
 */
 int	count_cmds(t_cmd *cmd)
 {
@@ -30,8 +30,8 @@ int	count_cmds(t_cmd *cmd)
 }
 
 /*
-** pipe_count 本のパイプを全て作る。
-** 途中で失敗した場合は、それまでに開いた fd を全て閉じてから -1 を返す。
+** Creates pipe_count pipes. On failure, closes all already-opened fds
+** and returns -1. Called by ft_execute_pipeline.
 */
 int	open_all_pipes(int (*pipes)[2], int pipe_count)
 {
@@ -59,9 +59,8 @@ int	open_all_pipes(int (*pipes)[2], int pipe_count)
 }
 
 /*
-** 全パイプのfdを閉じる。
-** 子プロセス内で dup2 後に呼ぶ。
-** 親プロセスでも fork 後に呼ぶ。
+** Closes both ends of every pipe. Called in children after dup2
+** and in the parent after forking.
 */
 void	close_all_pipes(int (*pipes)[2], int pipe_count)
 {
@@ -76,6 +75,10 @@ void	close_all_pipes(int (*pipes)[2], int pipe_count)
 	}
 }
 
+/*
+** Returns the nth node in the command linked list.
+** Used by exec_pipeline_child to find the command for a given child index.
+*/
 t_cmd	*get_nth_cmd(t_cmd *cmd, int idx)
 {
 	while (cmd && idx > 0)
@@ -86,6 +89,10 @@ t_cmd	*get_nth_cmd(t_cmd *cmd, int idx)
 	return (cmd);
 }
 
+/*
+** Waits for all pipeline children and updates shell->last_status
+** from the last command's exit status. Called by ft_execute_pipeline.
+*/
 void	wait_all_cmds(pid_t *pids, int cmd_count, t_shell *shell)
 {
 	int	i;

@@ -14,9 +14,8 @@
 #include <sys/wait.h>
 
 /*
-** 子プロセスの処理。
-** シグナルをデフォルトに設定してから "> " プロンプトで1行ずつ読み込み、
-** delimiter と一致するか Ctrl+D が来るまでパイプに書き続ける。
+** Child process for heredoc: reads lines until the delimiter or EOF,
+** writing each line into the pipe. Never returns.
 */
 static void	exec_heredoc_child(int *pipefd, char *delimiter)
 {
@@ -44,10 +43,9 @@ static void	exec_heredoc_child(int *pipefd, char *delimiter)
 }
 
 /*
-** heredoc を処理する。
-** pipe() でパイプを作り、子プロセスで入力を書き込んだ後
-** 親プロセスが子の終了を待ち、読み込み端の fd を返す。
-** 成功: pipefd[0] / 失敗: -1
+** Forks a child to collect heredoc input into a pipe.
+** Returns the read-end fd on success, -1 on failure or Ctrl+D interrupt.
+** Called by prepare_heredocs and apply_heredoc_redir.
 */
 int	apply_heredoc(char *delimiter)
 {
@@ -79,9 +77,8 @@ int	apply_heredoc(char *delimiter)
 }
 
 /*
-** fork前に全コマンドの heredoc を処理して
-** t_redir->fd に読み込み端の fd を保存する。
-** 成功: 0, 失敗: -1
+** Pre-processes all heredoc redirections before forking, storing
+** the read-end fd in redir->fd. Called by ft_execute_pipeline.
 */
 int	prepare_heredocs(t_cmd *cmd)
 {

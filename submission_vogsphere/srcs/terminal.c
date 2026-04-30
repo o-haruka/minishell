@@ -12,7 +12,10 @@
 
 #include "minishell.h"
 
-/* ^C などのコントロール文字のエコーを非表示にする */
+/*
+** Suppress echoing of control characters (e.g. "^C") in the terminal.
+** Called before readline so the prompt stays clean.
+*/
 void	disable_echoctl(void)
 {
 	struct termios	term;
@@ -23,7 +26,10 @@ void	disable_echoctl(void)
 	tcsetattr(STDIN_FILENO, TCSANOW, &term);
 }
 
-/* ^C などのエコーを元の表示される状態に戻す */
+/*
+** Re-enable echoing of control characters.
+** Called after readline returns to restore normal terminal behavior.
+*/
 void	restore_echoctl(void)
 {
 	struct termios	term;

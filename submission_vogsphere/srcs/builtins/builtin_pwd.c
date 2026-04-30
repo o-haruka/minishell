@@ -12,15 +12,10 @@
 
 #include "minishell.h"
 
-//?Macや最近のLinuxの getcwd には、「裏技（拡張仕様）」が用意されている。
-//第1引数に NULL、第2引数に 0 を渡すと、getcwd 自身が必要な文字数を計算し、
-// 勝手にmallocでピッタリの箱を作ってパスを入れ、そのポインタを返してくれます。
-
-// ?man 3  getpwd
-// If buf is NULL,
-// space is allocated as necessary to store the pathname and size is ignored.
-// This space may later be free(3)'d.
-
+/*
+** Builtin pwd: print the current working directory to stdout.
+** Passes NULL/0 to getcwd so it allocates the buffer automatically.
+*/
 int	ft_pwd(void)
 {
 	char	*path;

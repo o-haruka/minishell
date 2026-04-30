@@ -13,18 +13,9 @@
 #include "minishell.h"
 #include <unistd.h>
 
-/*-----テスト-----
-minishell> env と打って、最初の PWD と OLDPWD を確認する。
-minishell> cd /tmp で移動する。
-minishell> env と打って、もう一度環境変数リストを見る。
-
-PWD=/tmp となり、OLDPWDが前までいたディレクトリのパスに書き換わっていれば、環境変数の更新ロジックは成功。
-*/
 /*
-** ==========================================
-** どこへ移動するか（引数のチェック）
-** ==========================================
-** 成功時は移動先のパス(文字列)を返し、失敗時はNULLを返すヘルパー関数
+** Resolve the target path for cd. Returns $HOME when no arg is given,
+** NULL on error. Called by ft_cd.
 */
 static char	*get_cd_path(t_cmd *cmd, t_shell *shell)
 {
@@ -46,10 +37,7 @@ static char	*get_cd_path(t_cmd *cmd, t_shell *shell)
 }
 
 /*
-** ==========================================
-** 環境変数の更新
-** ==========================================
-** PWD と OLDPWD を新しいパスで上書きするヘルパー関数
+** Error cleanup for update_pwd_vars: prints an error and frees both paths.
 */
 static int	update_pwd_error(char *old_pwd, char *new_pwd)
 {
@@ -59,6 +47,10 @@ static int	update_pwd_error(char *old_pwd, char *new_pwd)
 	return (1);
 }
 
+/*
+** Update PWD and OLDPWD in the env list after a successful chdir.
+** Called by ft_cd.
+*/
 static int	update_pwd_vars(t_shell *shell, char *old_pwd)
 {
 	char	*new_pwd;
@@ -80,9 +72,7 @@ static int	update_pwd_vars(t_shell *shell, char *old_pwd)
 }
 
 /*
-** ==========================================
-** 実際に移動する (chdir) ＆ 全体の統括
-** ==========================================
+** Builtin cd: resolve the target path, chdir to it, then update PWD/OLDPWD.
 */
 int	ft_cd(t_cmd *cmd, t_shell *shell)
 {

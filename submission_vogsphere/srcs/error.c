@@ -15,8 +15,8 @@
 #include <string.h>
 
 /*
-** 汎用エラー出力関数（ビルトイン・外部コマンド両対応）
-** cmd_name が NULL でなければ "cmd_name: " を追加出力する
+** Write a formatted error to stderr: "minishell: [cmd: ][target: ]message".
+** NULL parts are omitted. Used throughout builtins and executor.
 */
 void	print_error_msg(char *cmd_name, char *target, char *error_msg)
 {

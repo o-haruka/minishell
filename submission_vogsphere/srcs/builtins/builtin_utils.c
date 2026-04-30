@@ -12,7 +12,10 @@
 
 #include "minishell.h"
 
-// ビルトインコマンドかどうかを判定する (1: ビルトイン, 0: 外部コマンド)
+/*
+** Return 1 if cmd matches a builtin name, 0 otherwise.
+** Called by ft_execute to decide whether to fork.
+*/
 int	is_builtin(char *cmd)
 {
 	if (!cmd)
@@ -34,7 +37,10 @@ int	is_builtin(char *cmd)
 	return (0);
 }
 
-// ビルトインコマンドを実行し、終了ステータス（last_status）を返す
+/*
+** Dispatch to the matching builtin function and return its exit status.
+** Called by execute_builtin.
+*/
 int	call_builtin(t_cmd *cmd, t_shell *shell)
 {
 	char	*name;

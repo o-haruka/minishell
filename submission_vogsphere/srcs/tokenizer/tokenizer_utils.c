@@ -17,9 +17,9 @@ bool	is_space(char c)
 	return (c == ' ' || c == '\t');
 }
 
-// メタ文字 (区切り文字) かどうか
-// シェルにとって特別な意味を持つ文字(必須課題): | < >
-//! | < >だけでいいのか？
+/*
+** Return true if c is a shell metacharacter (|, <, >).
+*/
 bool	is_metachar(char c)
 {
 	return (c == '|' || c == '<' || c == '>');
@@ -32,12 +32,8 @@ void	consume_space(char **line)
 }
 
 /*
-** クォート（' または "）が正しく閉じられているか確認する。
-** 閉じられていない場合は 1 を返す。
-** 例:
-**   echo 'hello'  → 0（正常）
-**   echo 'hello   → 1（エラー: シングルクォートが閉じていない）
-**   echo "hello  → 1（エラー: ダブルクォートが閉じていない）
+** Return 1 if line contains an unmatched single- or double-quote, 0 otherwise.
+** Called by tokenize before building the token list.
 */
 int	has_unclosed_quote(char *line)
 {

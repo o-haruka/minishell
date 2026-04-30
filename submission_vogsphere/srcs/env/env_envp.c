@@ -13,8 +13,8 @@
 #include "minishell.h"
 
 /*
-** env_to_envp で作った char** 配列を解放する。
-** 各文字列（"KEY=VALUE"）と配列本体を両方 free する。
+** Free a char** envp array created by env_to_envp.
+** Frees each "KEY=VALUE" string and then the array itself.
 */
 void	free_envp(char **envp)
 {
@@ -29,9 +29,8 @@ void	free_envp(char **envp)
 }
 
 /*
-** t_env の1ノードから "KEY=VALUE" 形式の文字列を作って返す。
-** value が NULL のノード（export NAME のみで登録された変数）は
-** "KEY=" として扱う。
+** Build a "KEY=VALUE" string from one t_env node.
+** Nodes with a NULL value are treated as "KEY=". Called by fill_envp.
 */
 static char	*make_kv_pair(t_env *node)
 {
@@ -51,8 +50,8 @@ static char	*make_kv_pair(t_env *node)
 }
 
 /*
-** t_env リストを走査して envp 配列を埋める。
-** 失敗時は作成済みの要素を解放する（envp 配列自体は呼び出し元が解放する）。
+** Fill the envp array from the env list. On failure, frees already-filled
+** entries; the array itself is freed by the caller. Called by env_to_envp.
 */
 static int	fill_envp(t_env *env, char **envp)
 {
@@ -78,9 +77,8 @@ static int	fill_envp(t_env *env, char **envp)
 }
 
 /*
-** t_env リストを char **envp 形式に変換して返す。
-** execve に渡すために使う。
-** 使い終わったら free_envp() で解放すること。
+** Convert the t_env list to a NULL-terminated char** array for execve.
+** Caller must free the result with free_envp.
 */
 char	**env_to_envp(t_env *env)
 {
