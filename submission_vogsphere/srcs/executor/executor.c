@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:31:17 by homura            #+#    #+#             */
-/*   Updated: 2026/04/29 19:16:31 by hkuninag         ###   ########.fr       */
+/*   Updated: 2026/04/30 16:32:31 by homura           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@ static void	execute_builtin(t_cmd *cmd, t_shell *shell)
 
 	saved_stdout = dup(STDOUT_FILENO);
 	saved_stdin = dup(STDIN_FILENO);
-	if (ft_apply_redirs(cmd) != -1)
-		shell->last_status = exec_builtin(cmd, shell);
+	if (ft_apply_redirs(cmd) == 0)
+		shell->last_status = call_builtin(cmd, shell);
 	else
 		shell->last_status = 1;
 	dup2(saved_stdout, STDOUT_FILENO);

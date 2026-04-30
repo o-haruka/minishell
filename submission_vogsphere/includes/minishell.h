@@ -6,7 +6,7 @@
 /*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:53:47 by homura            #+#    #+#             */
-/*   Updated: 2026/04/28 16:56:56 by homura           ###   ########.fr       */
+/*   Updated: 2026/04/30 16:33:21 by homura           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,6 +183,6 @@ int					ft_export(t_cmd *cmd, t_shell *shell);
 int					ft_unset(t_cmd *cmd, t_shell *shell);
 int					ft_exit(t_cmd *cmd, t_shell *shell);
 int					is_builtin(char *cmd);
-int					exec_builtin(t_cmd *cmd, t_shell *shell);
+int					call_builtin(t_cmd *cmd, t_shell *shell);
 
 #endif

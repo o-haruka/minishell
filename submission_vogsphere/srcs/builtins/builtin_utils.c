@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:31:46 by homura            #+#    #+#             */
-/*   Updated: 2026/04/28 16:44:19 by hkuninag         ###   ########.fr       */
+/*   Updated: 2026/04/30 16:32:14 by homura           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,23 +35,23 @@ int	is_builtin(char *cmd)
 }
 
 // ビルトインコマンドを実行し、終了ステータス（last_status）を返す
-int	exec_builtin(t_cmd *cmd, t_shell *shell)
+int	call_builtin(t_cmd *cmd, t_shell *shell)
 {
 	char	*name;
 
 	name = cmd->args[0];
-	if (ft_strncmp(name, "pwd", 4) == 0)
-		return (ft_pwd());
-	if (ft_strncmp(name, "env", 4) == 0)
-		return (ft_env(shell));
 	if (ft_strncmp(name, "echo", 5) == 0)
 		return (ft_echo(cmd));
 	if (ft_strncmp(name, "cd", 3) == 0)
 		return (ft_cd(cmd, shell));
+	if (ft_strncmp(name, "pwd", 4) == 0)
+		return (ft_pwd());
 	if (ft_strncmp(name, "export", 7) == 0)
 		return (ft_export(cmd, shell));
 	if (ft_strncmp(name, "unset", 6) == 0)
 		return (ft_unset(cmd, shell));
+	if (ft_strncmp(name, "env", 4) == 0)
+		return (ft_env(shell));
 	if (ft_strncmp(name, "exit", 5) == 0)
 		return (ft_exit(cmd, shell));
 	return (0);
