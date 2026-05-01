@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:32:42 by hkuninag          #+#    #+#             */
-/*   Updated: 2026/04/28 20:25:59 by hkuninag         ###   ########.fr       */
+/*   Updated: 2026/05/01 15:38:47 by homura           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,11 @@ static void	exec_pipeline_child(int idx, int count, int (*pipes)[2],
 	if (!cmd)
 		exit(1);
 	if (ft_apply_redirs(cmd) == -1)
+	{
+		if (g_signal != 0)
+			exit(128 + g_signal);
 		exit(1);
+	}
 	path = search_path(cmd->args[0], shell->env);
 	if (!path)
 	{
@@ -91,6 +95,18 @@ static int	fork_all_cmds(t_shell *shell, int cmd_count, int (*pipes)[2],
 	return (0);
 }
 
+static void	pipeline_failure(t_shell *shell, int (*pipes)[2], int pipe_count,
+		pid_t *pids)
+{
+	if (g_signal != 0)
+		shell->last_status = 128 + g_signal;
+	else
+		shell->last_status = 1;
+	close_all_pipes(pipes, pipe_count);
+	free(pipes);
+	free(pids);
+}
+
 /*
 ** Entry point for pipeline execution, called by ft_execute when cmd->next
 ** is non-NULL. Allocates pipes and pids, forks all children, waits for
@@ -108,14 +124,12 @@ void	ft_execute_pipeline(t_shell *shell)
 	pipes = malloc(sizeof(*pipes) * pipe_count);
 	pids = malloc(sizeof(pid_t) * cmd_count);
 	if (!pipes || !pids)
-		return (free(pipes), free(pids), (void)0);
+		return (free(pipes), free(pids));
 	if (open_all_pipes(pipes, pipe_count) == -1
-		|| prepare_heredocs(shell->cmds) == -1
-		|| fork_all_cmds(shell, cmd_count, pipes, pids) == -1)
+		|| prepare_heredocs(shell->cmds) == -1 || fork_all_cmds(shell,
+			cmd_count, pipes, pids) == -1)
 	{
-		close_all_pipes(pipes, pipe_count);
-		free(pipes);
-		free(pids);
+		pipeline_failure(shell, pipes, pipe_count, pids);
 		return ;
 	}
 	close_all_pipes(pipes, pipe_count);

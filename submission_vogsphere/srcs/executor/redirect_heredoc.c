@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirect_heredoc.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:32:50 by hkuninag          #+#    #+#             */
-/*   Updated: 2026/04/29 00:00:00 by hkuninag         ###   ########.fr       */
+/*   Updated: 2026/05/01 15:41:23 by homura           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static void	exec_heredoc_child(int *pipefd, char *delimiter)
 {
 	char	*line;
 
-	set_signal_for_child();
+	set_signal_for_heredoc_child();
 	close(pipefd[0]);
 	while (1)
 	{
@@ -47,17 +47,33 @@ static void	exec_heredoc_child(int *pipefd, char *delimiter)
 ** Returns the read-end fd on success, -1 on failure or Ctrl+D interrupt.
 ** Called by prepare_heredocs and apply_heredoc_redir.
 */
+static int	apply_heredoc_wait(pid_t pid, int *pipefd)
+{
+	int	status;
+
+	if (wait_for_child(pid, &status) == -1)
+	{
+		close(pipefd[0]);
+		return (-1);
+	}
+	if (WIFSIGNALED(status))
+	{
+		g_signal = WTERMSIG(status);
+		if (g_signal == SIGINT)
+			write(STDERR_FILENO, "\n", 1);
+		close(pipefd[0]);
+		return (-1);
+	}
+	return (pipefd[0]);
+}
+
 int	apply_heredoc(char *delimiter)
 {
 	int		pipefd[2];
 	pid_t	pid;
-	int		status;
 
 	if (pipe(pipefd) == -1)
-	{
-		print_error_msg(NULL, "pipe", strerror(errno));
-		return (-1);
-	}
+		return (print_error_msg(NULL, "pipe", strerror(errno)), -1);
 	pid = fork();
 	if (pid == -1)
 	{
@@ -69,11 +85,7 @@ int	apply_heredoc(char *delimiter)
 	if (pid == 0)
 		exec_heredoc_child(pipefd, delimiter);
 	close(pipefd[1]);
-	if (wait_for_child(pid, &status) == -1)
-		return (close(pipefd[0]), -1);
-	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
-		return (write(STDERR_FILENO, "\n", 1), close(pipefd[0]), -1);
-	return (pipefd[0]);
+	return (apply_heredoc_wait(pid, pipefd));
 }
 
 /*

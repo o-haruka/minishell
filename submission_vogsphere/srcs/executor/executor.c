@@ -88,7 +88,12 @@ static void	execute_builtin(t_cmd *cmd, t_shell *shell)
 	if (ft_apply_redirs(cmd) == 0)
 		shell->last_status = call_builtin(cmd, shell);
 	else
-		shell->last_status = 1;
+	{
+		if (g_signal != 0)
+			shell->last_status = 128 + g_signal;
+		else
+			shell->last_status = 1;
+	}
 	if (restore_stdio(saved_stdout, saved_stdin) == -1)
 		shell->last_status = 1;
 }
@@ -116,6 +121,8 @@ static void	exec_external(char *path, t_cmd *cmd, t_shell *shell)
 		if (ft_apply_redirs(cmd) == -1)
 		{
 			free(path);
+			if (g_signal != 0)
+				exit(128 + g_signal);
 			exit(1);
 		}
 		do_execve(path, cmd, shell);

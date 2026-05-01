@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 00:00:00 by hkuninag          #+#    #+#             */
-/*   Updated: 2026/04/30 18:06:07 by hkuninag         ###   ########.fr       */
+/*   Updated: 2026/05/01 15:37:47 by homura           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,14 +72,22 @@ int	wait_for_child(pid_t pid, int *status)
 */
 void	update_last_status(int status, t_shell *shell)
 {
+	int	sig;
+
 	if (WIFEXITED(status))
 		shell->last_status = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))
 	{
-		shell->last_status = 128 + WTERMSIG(status);
-		if (WTERMSIG(status) == SIGQUIT)
-			ft_putendl_fd("Quit: 3", STDERR_FILENO);
-		else if (WTERMSIG(status) == SIGINT)
+		sig = WTERMSIG(status);
+		shell->last_status = 128 + sig;
+		if (sig == SIGQUIT)
+		{
+			if (WCOREDUMP(status))
+				ft_putendl_fd("Quit (core dumped)", STDERR_FILENO);
+			else
+				ft_putendl_fd("Quit", STDERR_FILENO);
+		}
+		else if (sig == SIGINT)
 			write(STDERR_FILENO, "\n", 1);
 	}
 }

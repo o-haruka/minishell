@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:53:47 by homura            #+#    #+#             */
-/*   Updated: 2026/04/30 16:33:21 by homura           ###   ########.fr       */
+/*   Updated: 2026/05/01 18:03:24 by hkuninag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,12 +97,6 @@ void				print_error_msg(char *cmd_name, char *target,
 						char *error_msg);
 
 /*----------------------------------------
-terminal(terminal.c)
-----------------------------------------*/
-void				disable_echoctl(void);
-void				restore_echoctl(void);
-
-/*----------------------------------------
 main (main.c)
 ----------------------------------------*/
 void				minishell_loop(t_shell *shell);
@@ -113,6 +107,7 @@ signal (signal.c)
 void				setup_signals(void);
 void				set_signal_for_parent_wait(void);
 void				set_signal_for_child(void);
+void				set_signal_for_heredoc_child(void);
 
 /*----------------------------------------
 tokenizer

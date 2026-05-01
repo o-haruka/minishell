@@ -6,7 +6,7 @@
 #    By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/04/28 16:36:27 by homura            #+#    #+#              #
-#    Updated: 2026/04/28 16:46:08 by hkuninag         ###   ########.fr        #
+#    Updated: 2026/05/01 18:03:13 by hkuninag         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -51,7 +51,6 @@ SRCS        = main.c \
               builtins/builtin_export.c \
               builtins/builtin_unset.c \
               builtins/builtin_exit.c \
-              terminal.c \
               error.c \
 
 OBJ         = $(SRCS:.c=.o)
