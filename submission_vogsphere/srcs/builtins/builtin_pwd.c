@@ -6,7 +6,7 @@
 /*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:30:50 by homura            #+#    #+#             */
-/*   Updated: 2026/04/28 17:12:23 by homura           ###   ########.fr       */
+/*   Updated: 2026/05/01 02:37:26 by homura           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	ft_pwd(void)
 	}
 	else
 	{
-		print_error_msg(NULL, "pwd", strerror(errno));
+		print_error_msg("pwd", NULL, strerror(errno));
 		return (1);
 	}
 }

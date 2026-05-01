@@ -6,7 +6,7 @@
 /*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:30:03 by homura            #+#    #+#             */
-/*   Updated: 2026/04/28 17:11:30 by homura           ###   ########.fr       */
+/*   Updated: 2026/05/01 11:23:02 by homura           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,14 @@ static char	*get_cd_path(t_cmd *cmd, t_shell *shell)
 			print_error_msg("cd", NULL, "HOME not set");
 		return (path);
 	}
-	else if (cmd->args[2] != NULL)
+	if (cmd->args[2] != NULL)
+		return (print_error_msg("cd", NULL, "too many arguments"), NULL);
+	if (ft_strcmp(cmd->args[1], "-") == 0)
 	{
-		print_error_msg("cd", NULL, "too many arguments");
-		return (NULL);
+		path = get_env_value(shell->env, "OLDPWD");
+		if (path == NULL)
+			return (print_error_msg("cd", NULL, "OLDPWD not set"), NULL);
+		return (ft_putendl_fd(path, STDOUT_FILENO), path);
 	}
 	return (cmd->args[1]);
 }
@@ -41,7 +45,7 @@ static char	*get_cd_path(t_cmd *cmd, t_shell *shell)
 */
 static int	update_pwd_error(char *old_pwd, char *new_pwd)
 {
-	print_error_msg(NULL, "malloc", strerror(errno));
+	print_error_msg("cd", NULL, strerror(errno));
 	free(old_pwd);
 	free(new_pwd);
 	return (1);
@@ -56,16 +60,12 @@ static int	update_pwd_vars(t_shell *shell, char *old_pwd)
 	char	*new_pwd;
 
 	new_pwd = getcwd(NULL, 0);
-	if (old_pwd)
-	{
-		if (update_env_value(&(shell->env), "OLDPWD", old_pwd) != 0)
-			return (update_pwd_error(old_pwd, new_pwd));
-	}
-	if (new_pwd)
-	{
-		if (update_env_value(&(shell->env), "PWD", new_pwd) != 0)
-			return (update_pwd_error(old_pwd, new_pwd));
-	}
+	if (!new_pwd)
+		return (update_pwd_error(old_pwd, new_pwd));
+	if (old_pwd && update_env_value(&(shell->env), "OLDPWD", old_pwd) != 0)
+		return (update_pwd_error(old_pwd, new_pwd));
+	if (update_env_value(&(shell->env), "PWD", new_pwd) != 0)
+		return (update_pwd_error(old_pwd, new_pwd));
 	free(old_pwd);
 	free(new_pwd);
 	return (0);
@@ -84,9 +84,7 @@ int	ft_cd(t_cmd *cmd, t_shell *shell)
 		return (1);
 	old_pwd = getcwd(NULL, 0);
 	if (!old_pwd)
-	{
-		free(old_pwd);
-	}
+		return (1);
 	if (chdir(path) != 0)
 	{
 		print_error_msg("cd", path, strerror(errno));

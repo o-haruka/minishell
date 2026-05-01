@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_echo.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:30:36 by homura            #+#    #+#             */
-/*   Updated: 2026/04/28 17:11:15 by hkuninag         ###   ########.fr       */
+/*   Updated: 2026/05/01 01:52:48 by homura           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ int	ft_echo(t_cmd *cmd)
 	int		i;
 	bool	n_flag;
 
+	if (!cmd || !cmd->args)
+		return (0);
 	n_flag = false;
 	i = 1;
 	while (cmd->args[i] && is_n_option(cmd->args[i]))
