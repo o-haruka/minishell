@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:30:03 by homura            #+#    #+#             */
-/*   Updated: 2026/05/01 11:23:02 by homura           ###   ########.fr       */
+/*   Updated: 2026/05/01 11:54:12 by hkuninag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ static char	*get_cd_path(t_cmd *cmd, t_shell *shell)
 	}
 	if (cmd->args[2] != NULL)
 		return (print_error_msg("cd", NULL, "too many arguments"), NULL);
-	if (ft_strcmp(cmd->args[1], "-") == 0)
+	if (ft_strncmp(cmd->args[1], "-", 1) == 0)
 	{
 		path = get_env_value(shell->env, "OLDPWD");
 		if (path == NULL)
