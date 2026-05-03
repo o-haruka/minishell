@@ -67,7 +67,7 @@ static int	apply_heredoc_wait(pid_t pid, int *pipefd)
 	return (pipefd[0]);
 }
 
-int	apply_heredoc(char *delimiter)
+int	read_heredoc_input(char *delimiter)
 {
 	int		pipefd[2];
 	pid_t	pid;
@@ -103,7 +103,7 @@ int	prepare_heredocs(t_cmd *cmd)
 		{
 			if (redir->kind == TK_HEREDOC)
 			{
-				redir->fd = apply_heredoc(redir->file);
+				redir->fd = read_heredoc_input(redir->file);
 				if (redir->fd == -1)
 					return (-1);
 			}

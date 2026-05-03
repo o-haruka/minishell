@@ -50,7 +50,7 @@ void	do_execve(char *path, t_cmd *cmd, t_shell *shell)
 /*
 ** Sets signals to wait mode, calls waitpid, then restores signals.
 ** Returns 0 on success, -1 on waitpid error. Called by exec_external
-** and apply_heredoc.
+** and read_heredoc_input.
 */
 int	wait_for_child(pid_t pid, int *status)
 {

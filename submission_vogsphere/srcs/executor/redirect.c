@@ -20,7 +20,7 @@
 static int	apply_heredoc_redir(t_redir *redir)
 {
 	if (redir->fd == -1)
-		redir->fd = apply_heredoc(redir->file);
+		redir->fd = read_heredoc_input(redir->file);
 	if (redir->fd == -1 || dup2(redir->fd, STDIN_FILENO) == -1)
 		return (-1);
 	close(redir->fd);
