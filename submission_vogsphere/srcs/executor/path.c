@@ -82,6 +82,8 @@ char	*search_path(char *cmd, t_env *env)
 	char	*path_env;
 	char	*exec_path;
 
+	if (!cmd || cmd[0] == '\0')
+		return (NULL);
 	if (ft_strchr(cmd, '/'))
 	{
 		if (access(cmd, F_OK) == 0)
