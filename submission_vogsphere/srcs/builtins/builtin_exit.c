@@ -25,7 +25,7 @@ static void	ft_do_exit(t_shell *shell, int code)
 
 /*
 ** Builtin exit: exit with last_status if no arg, or with the numeric arg
-** if given. Prints an error and does not exit on non-numeric or too many args.
+** if given. Exits on non-numeric arg (status 2), returns on too many args.
 */
 int	ft_exit(t_cmd *cmd, t_shell *shell)
 {
@@ -37,7 +37,7 @@ int	ft_exit(t_cmd *cmd, t_shell *shell)
 	{
 		print_error_msg("exit", cmd->args[1], "numeric argument required");
 		shell->last_status = 2;
-		return (2);
+		ft_do_exit(shell, 2);
 	}
 	if (cmd->args[2])
 	{
