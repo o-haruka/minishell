@@ -54,16 +54,12 @@ int	update_env_value(t_env **env_head, char *key, char *new_value)
 	{
 		if (ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
 		{
+			if (new_value == NULL)
+				return (0);
 			free(current->value);
-			current->value = NULL;
-			if (new_value)
-			{
-				current->value = ft_strdup(new_value);
-				if (!current->value)
-					return (1);
-			}
-			else
-				current->value = NULL;
+			current->value = ft_strdup(new_value);
+			if (!current->value)
+				return (1);
 			return (0);
 		}
 		current = current->next;
