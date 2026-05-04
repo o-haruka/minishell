@@ -153,7 +153,7 @@ excecter
 void				ft_execute(t_shell *shell);
 char				*search_path(char *cmd, t_env *env);
 int					ft_apply_redirs(t_cmd *cmd);
-int					apply_heredoc(char *delimiter);
+int					read_heredoc_input(char *delimiter);
 int					prepare_heredocs(t_cmd *cmd);
 void				ft_execute_pipeline(t_shell *shell);
 int					count_cmds(t_cmd *cmd);
