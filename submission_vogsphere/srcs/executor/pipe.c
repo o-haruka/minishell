@@ -61,6 +61,8 @@ static void	exec_pipeline_child(int idx, int count, int (*pipes)[2],
 			exit(128 + g_signal);
 		exit(1);
 	}
+	if (is_builtin(cmd->args[0]))
+		exit(call_builtin(cmd, shell));
 	path = search_path(cmd->args[0], shell->env);
 	if (!path)
 	{
