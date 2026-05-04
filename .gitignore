@@ -5,3 +5,5 @@ submission/libft/libft.a
 submission/minishell
 .DS_Store
 prv_memo_hkuninag.md
+submission/
+.vscode/
