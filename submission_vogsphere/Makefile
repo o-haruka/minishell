@@ -3,24 +3,24 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+         #
+#    By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/04/28 16:36:27 by homura            #+#    #+#              #
-#    Updated: 2026/05/01 18:03:13 by hkuninag         ###   ########.fr        #
+#    Updated: 2026/05/03 21:39:58 by homura           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME        = minishell
+NAME        := minishell
 
-CC          = cc
-CFLAGS      = -Wall -Wextra -Werror
+CC          := cc
+CFLAGS      := -Wall -Wextra -Werror
 
-SRC_PATH    = srcs
-OBJ_PATH    = objs
-INC_PATH    = includes
-LIB_PATH    = libft
+SRC_PATH    := srcs
+OBJ_PATH    := objs
+INC_PATH    := includes
+LIB_PATH    := libft
 
-SRCS        = main.c \
+SRCS        := main.c \
               executor/executor.c \
               executor/pipe.c \
 			  executor/pipe_utils.c \
@@ -51,21 +51,21 @@ SRCS        = main.c \
               builtins/builtin_export.c \
               builtins/builtin_unset.c \
               builtins/builtin_exit.c \
-              error.c \
+              error.c
 
-OBJ         = $(SRCS:.c=.o)
-OBJS        = $(addprefix $(OBJ_PATH)/, $(OBJ))
+OBJ         := $(SRCS:.c=.o)
+OBJS        := $(addprefix $(OBJ_PATH)/, $(OBJ))
 
-INCS        = -I$(INC_PATH) -I$(LIB_PATH)/includes
+INCS        := -I$(INC_PATH) -I$(LIB_PATH)/includes
 
-LDFLAGS     = -L$(LIB_PATH)
-LIBS        = -lreadline -lft
+LDFLAGS     := -L$(LIB_PATH)
+LIBS        := -lreadline -lft
 
-LIBFT       = $(LIB_PATH)/libft.a
+LIBFT       := $(LIB_PATH)/libft.a
 
 UNAME       := $(shell uname)
 ifeq ($(UNAME), Darwin)
-    READLINE_PREFIX = $(shell brew --prefix readline)
+    READLINE_PREFIX := $(shell brew --prefix readline)
     INCS    += -I$(READLINE_PREFIX)/include
     LDFLAGS += -L$(READLINE_PREFIX)/lib
 endif
@@ -78,16 +78,16 @@ $(NAME): $(OBJS) $(LIBFT)
 $(LIBFT):
 	$(MAKE) -C $(LIB_PATH)
 
-$(OBJ_PATH)/%.o: $(SRC_PATH)/%.c $(LIBFT)
+$(OBJ_PATH)/%.o: $(SRC_PATH)/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(INCS) -c $< -o $@
 
 clean:
-	rm -rf $(OBJ_PATH)
+	$(RM) -r $(OBJ_PATH)
 	$(MAKE) -C $(LIB_PATH) clean
 
 fclean: clean
-	rm -f $(NAME)
+	$(RM) $(NAME)
 	$(MAKE) -C $(LIB_PATH) fclean
 
 re: fclean all
