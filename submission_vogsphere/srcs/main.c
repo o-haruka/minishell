@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:35:18 by homura            #+#    #+#             */
-/*   Updated: 2026/05/01 18:02:43 by hkuninag         ###   ########.fr       */
+/*   Updated: 2026/05/04 15:49:48 by homura           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static char	*read_line_input(void)
 	char	*line;
 
 	if (isatty(STDIN_FILENO))
-		line = readline(GREEN "minishell> " RESET);
+		line = readline("minishell$ ");
 	else
 		line = get_next_line(STDIN_FILENO);
 	if (line && !isatty(STDIN_FILENO))
