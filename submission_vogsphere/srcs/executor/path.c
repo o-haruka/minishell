@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   path.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:32:30 by homura            #+#    #+#             */
-/*   Updated: 2026/04/28 16:57:54 by hkuninag         ###   ########.fr       */
+/*   Updated: 2026/05/04 13:02:47 by homura           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ static char	*find_executable_in_paths(char **paths, char *cmd)
 		full_path = join_path(paths[i], cmd);
 		if (full_path == NULL)
 			return (NULL);
-		if (access(full_path, X_OK) == 0)
+		if (access(full_path, X_OK) == 0 && !is_directory(full_path))
 			return (full_path);
 		free(full_path);
 		i++;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:53:47 by homura            #+#    #+#             */
-/*   Updated: 2026/05/01 18:03:24 by hkuninag         ###   ########.fr       */
+/*   Updated: 2026/05/04 12:16:13 by homura           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,7 @@ common	util(utils.c)
 ----------------------------------------*/
 void				print_error_msg(char *cmd_name, char *target,
 						char *error_msg);
+int					is_directory(const char *path);
 
 /*----------------------------------------
 main (main.c)

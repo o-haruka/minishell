@@ -6,7 +6,7 @@
 /*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 00:00:00 by hkuninag          #+#    #+#             */
-/*   Updated: 2026/05/01 15:37:47 by homura           ###   ########.fr       */
+/*   Updated: 2026/05/04 13:02:46 by homura           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,15 @@ void	do_execve(char *path, t_cmd *cmd, t_shell *shell)
 		free(path);
 		exit(1);
 	}
+
+	if (is_directory(path))
+	{
+		print_error_msg(NULL, cmd->args[0], "Is a directory");
+		free_envp(current_envp);
+		free(path);
+		exit(126);
+	}
+
 	execve(path, cmd->args, current_envp);
 	status = execve_exit_status();
 	print_error_msg(NULL, cmd->args[0], strerror(errno));
