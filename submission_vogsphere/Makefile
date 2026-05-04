@@ -6,7 +6,7 @@
 #    By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/04/28 16:36:27 by homura            #+#    #+#              #
-#    Updated: 2026/05/03 21:39:58 by homura           ###   ########.fr        #
+#    Updated: 2026/05/04 11:14:43 by homura           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -72,7 +72,7 @@ endif
 
 all: $(NAME)
 
-$(NAME): $(OBJS) $(LIBFT)
+$(NAME): $(LIBFT) $(OBJS)
 	$(CC) $(OBJS) $(LDFLAGS) $(LIBS) -o $(NAME)
 
 $(LIBFT):

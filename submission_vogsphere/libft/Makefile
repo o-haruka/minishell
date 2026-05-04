@@ -6,7 +6,7 @@
 #    By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/09 20:36:41 by vscode            #+#    #+#              #
-#    Updated: 2026/04/28 15:31:56 by homura           ###   ########.fr        #
+#    Updated: 2026/05/04 11:15:53 by homura           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -98,9 +98,6 @@ STDLIB_SRCS = $(addprefix $(STDLIB_PATH)/, $(STDLIB_SRC))
 STRING_PATH = string
 STRING_SRCS = $(addprefix $(STRING_PATH)/, $(STRING_SRC))
 
-# PRINTF_PATH = stdio/ft_printf
-# PRINTF = libftprintf.a
-
 SRCS = $(CTYPE_SRCS) \
 		$(LIST_SRCS) \
 		$(STDIO_SRCS) \
@@ -113,23 +110,14 @@ all: $(NAME)
 
 $(NAME): $(OBJ)
 	@ ar rcs $(NAME) $(OBJ)
-# 	@ make -C $(PRINTF_PATH)
-# 	@ cp $(PRINTF_PATH)/$(PRINTF) ./$(NAME)
 
-# %.o: %.c $(HEADER)
-# 	$(CC) $(CFLAGS) -c $< -o $@
 %.o: %.c
 	$(CC) $(CFLAGS) -I$(INCLUDE) -c $< -o $@
 
-# .c.o: $(OBJS)
-# 	@ $(CC) $(CFLAGS) -I $(INCLUDE) -c $< -o $@
-
 clean:
-# 	@ make clean -C $(PRINTF_PATH)
 	rm -f $(OBJ)
 
 fclean: clean
-# 	@ make fclean -C $(PRINTF_PATH)
 	rm -f $(NAME)
 
 re: fclean all
