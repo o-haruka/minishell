@@ -6,7 +6,7 @@
 /*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 00:00:00 by hkuninag          #+#    #+#             */
-/*   Updated: 2026/05/04 13:02:46 by homura           ###   ########.fr       */
+/*   Updated: 2026/05/05 00:05:38 by homura           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,19 @@ void	do_execve(char *path, t_cmd *cmd, t_shell *shell)
 	free_envp(current_envp);
 	free(path);
 	exit(status);
+}
+
+void	exec_child(char *path, t_cmd *cmd, t_shell *shell)
+{
+	set_signal_for_child();
+	if (ft_apply_redirs(cmd) == -1)
+	{
+		free(path);
+		if (g_signal != 0)
+			exit(128 + g_signal);
+		exit(1);
+	}
+	do_execve(path, cmd, shell);
 }
 
 /*
