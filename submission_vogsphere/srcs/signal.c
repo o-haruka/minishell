@@ -6,13 +6,13 @@
 /*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:35:24 by homura            #+#    #+#             */
-/*   Updated: 2026/05/01 15:42:20 by homura           ###   ########.fr       */
+/*   Updated: 2026/05/04 18:35:01 by homura           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int		g_signal = 0;
+volatile sig_atomic_t g_signal = 0;
 
 /*
 ** SIGINT handler for the interactive prompt. Clears the current input line

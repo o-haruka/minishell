@@ -6,7 +6,7 @@
 /*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:53:47 by homura            #+#    #+#             */
-/*   Updated: 2026/05/04 12:16:13 by homura           ###   ########.fr       */
+/*   Updated: 2026/05/04 18:31:41 by homura           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,14 +27,7 @@
 # include <termios.h>
 # include <unistd.h>
 
-# define CHECK "\033[32m[✔]\033[0m"
-# define CROSS "\033[31m[✘]\033[0m"
-# define GREEN "\033[0;32m"
-# define RED "\033[0;31m"
-# define PINK "\033[0;35m"
-# define RESET "\033[0m"
-
-extern int			g_signal;
+extern volatile sig_atomic_t g_signal;
 
 /***********************************
 Enum & Structs
