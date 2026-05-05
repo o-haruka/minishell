@@ -11,10 +11,12 @@ We built a fully interactive command-line interpreter, gaining hands-on knowledg
 - Interactive prompt with command history (via `readline`)
 - PATH-based executable search and launch
 - Single and double quote handling
-- Environment variable expansion (`$VAR`, `$?`)
+- Environment variable expansion (`$VAR`)
+- Special parameter expansion (`$?` — last exit status)
 - Input/output redirections: `<`, `>`, `<<` (here-doc), `>>`
 - Pipes (`|`) connecting command output to the next command's input
-- Signal handling: `ctrl-C` (new prompt), `ctrl-D` (exit), `ctrl-\` (ignored)
+- Signal handling: `ctrl-C` (new prompt), `ctrl-\` (ignored)
+- EOF handling: `ctrl-D` (exit shell)
 - Built-in commands:
   - `echo` (with `-n` option)
   - `cd` (relative and absolute paths)
@@ -31,39 +33,38 @@ We built a fully interactive command-line interpreter, gaining hands-on knowledg
 minishell/
 ├── Makefile
 ├── includes/
-│   └── minishell.h              # shared structs and prototypes
-├── libft/                       # custom C library
+│   └── minishell.h                  # shared structs and prototypes
+├── libft/                           # custom C library
 └── srcs/
     ├── main.c
     ├── signal.c
-    ├── terminal.c               # terminal settings
-    ├── utils.c                  # shared utility functions
-    ├── tokenizer/               # lexical analysis (input → tokens)
+    ├── error.c                      # shared error output helpers
+    ├── tokenizer/                   # lexical analysis (input → tokens)
     │   ├── tokenizer.c
     │   ├── tokenizer_syntax.c
     │   ├── tokenizer_utils.c
     │   ├── token_operator.c
     │   ├── token_word.c
     │   └── token.c
-    ├── parser/                  # syntax analysis + variable expansion
+    ├── parser/                      # syntax analysis + variable expansion
     │   ├── parser.c
     │   ├── parser_redirect.c
     │   ├── parser_utils.c
     │   ├── expand.c
     │   └── expand_utils.c
-    ├── env/                     # environment variable list management
-    │   ├── env_init.c
-    │   ├── env_update.c
-    │   └── env_utils.c
-    ├── executor/                # fork/exec, pipes, redirections
+    ├── env/                         # environment variable list management
+    │   ├── env_list.c               # t_env linked list operations
+    │   ├── env_update.c             # export / unset list updates
+    │   └── env_envp.c               # env_to_envp() for execve
+    ├── executor/                    # fork/exec, pipes, redirections
     │   ├── executor.c
-    │   ├── execute_builtin.c
+    │   ├── exec_utils.c             # executor helper functions
     │   ├── path.c
     │   ├── pipe.c
     │   ├── pipe_utils.c
     │   ├── redirect.c
     │   └── redirect_heredoc.c
-    └── builtins/                # built-in command implementations
+    └── builtins/                    # built-in command implementations
         ├── builtin_cd.c
         ├── builtin_echo.c
         ├── builtin_env.c
@@ -144,38 +145,64 @@ minishell/
        |  Double-quoted strings: only $ inside is expanded.
        v
 -----------------------------------------------------------------------------
-[5. Executor]           executor.c / execute_builtin.c  ft_execute()
-       |  Determines whether the command is a built-in (echo, cd, export,
-       |  etc.) or an external command, and routes accordingly.
-       |  For pipelines, ft_execute_pipeline() manages the full pipeline.
+[5. Executor]           executor.c / pipe.c  ft_execute()
+       |
+       |  ft_execute() is the entry point. It inspects the t_cmd list and
+       |  routes execution down one of three paths depending on whether the
+       |  input is a pipeline, a built-in command, or an external command.
        v
 
   (parent process: minishell)
         |
-        |  [built-in command]
-        +-----------------> execute_builtin() called directly in the parent
-        |                   (no fork -- changes to env/cwd are reflected
-        |                    in the parent shell)
+        |  ---- PATH (A): Pipeline  (cmd->next != NULL) -----------------
         |
-        |  [external command]
-        |  open_all_pipes()  -- allocates pipe fds for each "|" boundary
+        |  ft_execute_pipeline()
+        |    |
+        |    +- open_all_pipes()     -- create N-1 pipe(2) fds
+        |    |                          (before fork so children inherit
+        |    |                           the shared kernel buffer)
+        |    +- prepare_heredocs()   -- read all << input in advance
+        |    |
+        |    +-- fork() --> [child 0]
+        |    |               set_child_io()       -- dup2 stdout -> pipe[0][1]
+        |    |               close_all_pipes()    -- close inherited pipe fds
+        |    |               ft_apply_redirs()    -- apply file redirections
+        |    |               do_execve("/bin/ls", ["ls","-l"], envp)
+        |    |
+        |    |                    (kernel pipe buffer)
+        |    |
+        |    +-- fork() --> [child 1]
+        |    |               set_child_io()       -- dup2 stdin  <- pipe[0][0]
+        |    |                                    -- dup2 stdout -> "out.txt"
+        |    |               close_all_pipes()    -- close inherited pipe fds
+        |    |               ft_apply_redirs()    -- apply file redirections
+        |    |               do_execve("/usr/bin/grep", ["grep",".c"], envp)
+        |    |
+        |    +- close_all_pipes()   -- parent closes its pipe copies
+        |    |                         (so children get EOF when writer exits)
+        |    +- wait_all_cmds()     -- waitpid() for every child;
+        |                              last child's status -> last_status
         |
-        +-- fork() --> [child 1]
-        |               set_signal_for_child()
-        |               ft_apply_redirs()     -- redirect stdout to pipe write-end
-        |               execve("/bin/ls", ["ls", "-l"], envp)
+        |  ---- PATH (B): Built-in  (is_builtin() == true) --------------
         |
-        |                         (kernel pipe buffer)
+        |  execute_builtin()   [runs in parent -- no fork]
+        |    |  (built-ins must run in the parent because they modify
+        |    |   shell state: cd changes cwd, export/unset change env,
+        |    |   exit terminates the shell itself)
+        |    +- dup(stdin/stdout)    -- save original fds
+        |    +- ft_apply_redirs()    -- apply redirections if any
+        |    +- exec_builtin()       -- dispatch: ft_echo / ft_cd / ...
+        |    +- dup2(saved fds)      -- restore stdin/stdout afterwards
         |
-        +-- fork() --> [child 2]
-        |               set_signal_for_child()
-        |               ft_apply_redirs()     -- redirect stdin from pipe read-end
-        |                                    -- redirect stdout to "out.txt" (dup2)
-        |               execve("/usr/bin/grep", ["grep", ".c"], envp)
+        |  ---- PATH (C): External single command  ----------------------
         |
-        |  set_signal_for_parent_wait()  -- parent ignores signals while waiting
-        |  wait_all_cmds()               -- waitpid() for every child;
-        |                                   collects exit status into last_status
+        |  search_path()            -- locate binary in $PATH
+        |  fork() --> [child]
+        |               set_signal_for_child()  -- reset SIGINT/SIGQUIT
+        |               ft_apply_redirs()       -- apply file redirections
+        |               do_execve(path, args, envp)
+        |
+        |  wait_for_child()         -- waitpid(); status -> last_status
         v
 -----------------------------------------------------------------------------
 [6. Cleanup]                                   main.c  process_command()
@@ -293,6 +320,7 @@ valgrind --leak-check=full \
   Extends tracking to child processes. minishell calls `fork()` when executing external commands and building pipelines. Without this option, memory leaks that occur **inside forked child processes** will go undetected.
 - `--suppressions=readline.supp`
   Loads a suppression file to silence warnings from `readline`-internal leaks that are explicitly permitted by the project specification.
+  **Note: `readline.supp` is not included in this repository. You must create it yourself**.
 
 
 ## Resources
@@ -306,6 +334,12 @@ valgrind --leak-check=full \
   - Ch. 20–22 — Signals and `sigaction`
   - Ch. 24–26 — Processes, `fork`, `execve`, `waitpid`
   - Ch. 44 — Pipes
+
+- **The Architecture of Open Source Applications** — https://aosabook.org/en/v1/bash.html
+
+	　Overview of bash's internal design: word expansion pipeline, command types, and process management.
+
+
 - **POSIX Shell & Utilities** — https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html
 
 
