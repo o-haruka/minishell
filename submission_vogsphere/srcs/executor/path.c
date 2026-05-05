@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   path.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:32:30 by homura            #+#    #+#             */
-/*   Updated: 2026/05/05 10:08:50 by hkuninag         ###   ########.fr       */
+/*   Updated: 2026/05/05 10:36:44 by homura           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,11 +99,7 @@ char	*search_path(char *cmd, t_env *env)
 	if (!cmd || cmd[0] == '\0')
 		return (NULL);
 	if (ft_strchr(cmd, '/'))
-	{
-		if (access(cmd, F_OK) == 0)
-			return (ft_strdup(cmd));
-		return (NULL);
-	}
+		return (ft_strdup(cmd));
 	path_env = get_env_value(env, "PATH");
 	if (!path_env)
 		return (NULL);
