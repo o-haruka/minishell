@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:35:24 by homura            #+#    #+#             */
-/*   Updated: 2026/05/04 18:35:01 by homura           ###   ########.fr       */
+/*   Updated: 2026/05/05 10:06:58 by hkuninag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-volatile sig_atomic_t g_signal = 0;
+volatile sig_atomic_t	g_signal = 0;
 
 /*
 ** SIGINT handler for the interactive prompt. Clears the current input line
@@ -58,7 +58,7 @@ void	set_signal_for_child(void)
 }
 
 /*
-** Set heredoc child signals 
+** Set heredoc child signals
 ** so Ctrl-C interrupts collection and Ctrl-\\ is ignored.
 */
 void	set_signal_for_heredoc_child(void)

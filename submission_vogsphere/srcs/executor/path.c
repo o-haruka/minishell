@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   path.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:32:30 by homura            #+#    #+#             */
-/*   Updated: 2026/05/05 09:55:10 by homura           ###   ########.fr       */
+/*   Updated: 2026/05/05 10:08:50 by hkuninag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ static void	free_array(char **arr)
 	}
 	free(arr);
 }
+
 /*
 ** Check if the given path is a directory.
 ** Returns 1 if true, 0 if false.

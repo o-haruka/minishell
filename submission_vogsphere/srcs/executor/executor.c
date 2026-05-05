@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:31:17 by homura            #+#    #+#             */
-/*   Updated: 2026/05/05 00:06:18 by homura           ###   ########.fr       */
+/*   Updated: 2026/05/05 10:08:27 by hkuninag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,10 +115,8 @@ static void	exec_external(char *path, t_cmd *cmd, t_shell *shell)
 		free(path);
 		return ;
 	}
-
 	if (pid == 0)
 		exec_child(path, cmd, shell);
-		
 	if (wait_for_child(pid, &status) == 0)
 		update_last_status(status, shell);
 	else
