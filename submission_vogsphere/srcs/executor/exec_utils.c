@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: hkuninag <hkuninag@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 00:00:00 by hkuninag          #+#    #+#             */
-/*   Updated: 2026/05/05 00:05:38 by homura           ###   ########.fr       */
+/*   Updated: 2026/05/05 10:07:55 by hkuninag         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ void	do_execve(char *path, t_cmd *cmd, t_shell *shell)
 		free(path);
 		exit(1);
 	}
-
 	if (is_directory(path))
 	{
 		print_error_msg(NULL, cmd->args[0], "Is a directory");
@@ -47,7 +46,6 @@ void	do_execve(char *path, t_cmd *cmd, t_shell *shell)
 		free(path);
 		exit(126);
 	}
-
 	execve(path, cmd->args, current_envp);
 	status = execve_exit_status();
 	print_error_msg(NULL, cmd->args[0], strerror(errno));
