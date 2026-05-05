@@ -6,7 +6,7 @@
 /*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:53:47 by homura            #+#    #+#             */
-/*   Updated: 2026/05/04 18:31:41 by homura           ###   ########.fr       */
+/*   Updated: 2026/05/05 00:16:26 by homura           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,6 +158,7 @@ void				free_envp(char **envp);
 int					execve_exit_status(void);
 void				update_last_status(int status, t_shell *shell);
 void				do_execve(char *path, t_cmd *cmd, t_shell *shell);
+void				exec_child(char *path, t_cmd *cmd, t_shell *shell);
 int					wait_for_child(pid_t pid, int *status);
 t_cmd				*get_nth_cmd(t_cmd *cmd, int idx);
 

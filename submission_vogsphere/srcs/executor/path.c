@@ -6,11 +6,12 @@
 /*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:32:30 by homura            #+#    #+#             */
-/*   Updated: 2026/05/04 13:02:47 by homura           ###   ########.fr       */
+/*   Updated: 2026/05/05 09:55:10 by homura           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <sys/stat.h>
 
 /*
 ** Free a NULL-terminated array of strings and the array itself.
@@ -29,6 +30,18 @@ static void	free_array(char **arr)
 		i++;
 	}
 	free(arr);
+}
+/*
+** Check if the given path is a directory.
+** Returns 1 if true, 0 if false.
+*/
+int	is_directory(const char *path)
+{
+	struct stat	statbuf;
+
+	if (stat(path, &statbuf) != 0)
+		return (0);
+	return (S_ISDIR(statbuf.st_mode));
 }
 
 /*

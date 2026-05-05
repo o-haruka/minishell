@@ -6,7 +6,7 @@
 /*   By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/28 16:31:17 by homura            #+#    #+#             */
-/*   Updated: 2026/05/04 13:02:48 by homura           ###   ########.fr       */
+/*   Updated: 2026/05/05 00:06:18 by homura           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,20 +115,14 @@ static void	exec_external(char *path, t_cmd *cmd, t_shell *shell)
 		free(path);
 		return ;
 	}
+
 	if (pid == 0)
-	{
-		set_signal_for_child();
-		if (ft_apply_redirs(cmd) == -1)
-		{
-			free(path);
-			if (g_signal != 0)
-				exit(128 + g_signal);
-			exit(1);
-		}
-		do_execve(path, cmd, shell);
-	}
-	if (wait_for_child(pid, &status) != -1)
+		exec_child(path, cmd, shell);
+		
+	if (wait_for_child(pid, &status) == 0)
 		update_last_status(status, shell);
+	else
+		shell->last_status = 1;
 	free(path);
 }
 

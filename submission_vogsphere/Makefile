@@ -6,7 +6,7 @@
 #    By: homura <homura@student.42tokyo.jp>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/04/28 16:36:27 by homura            #+#    #+#              #
-#    Updated: 2026/05/04 12:14:40 by homura           ###   ########.fr        #
+#    Updated: 2026/05/05 09:57:23 by homura           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -51,7 +51,6 @@ SRCS        := main.c \
               builtins/builtin_export.c \
               builtins/builtin_unset.c \
               builtins/builtin_exit.c \
-              check.c \
               error.c
 
 OBJ         := $(SRCS:.c=.o)
